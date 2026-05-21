@@ -27,6 +27,7 @@ class ResetPasswordScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(height: 15.h),
             AppTopLogo(),
 
             SizedBox(height: 100.h),

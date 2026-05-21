@@ -4,20 +4,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:range_wave/core/utils/custom_toast.dart';
 import 'package:range_wave/service/auth_service.dart';
 
+import '../core/utils/app_helper.dart';
+
 class SignupController extends GetxController {
   final formKey = GlobalKey<FormState>();
-  final TextEditingController nameController = TextEditingController(
-    text: 'abid',
-  );
-  final TextEditingController emailController = TextEditingController(
-    text: "a@gmail.com",
-  );
-  final TextEditingController passwordController = TextEditingController(
-    text: "123456",
-  );
-  final TextEditingController confirmPasswordController = TextEditingController(
-    text: "123456",
-  );
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
 
   RxBool isLoading = RxBool(false);
   RxString selectedRole = RxString('');
@@ -53,6 +47,23 @@ class SignupController extends GetxController {
       isLoading.value = false;
       showCustomToast(
         text: response.error ?? 'something went wrong',
+        toastType: ToastTypesInfo(ToastTypes.error),
+      );
+      return false;
+    }
+  }
+  Future<bool> verifyEmail(String otp) async {
+    isLoading.value = true;
+    final userId = await AppHelper.instance.getUserId();
+    final response = await _authService.verifyEmailSign(otp, userId ?? '');
+
+    if (response.data != null) {
+      isLoading.value = false;
+      return true;
+    } else {
+      isLoading.value = false;
+      showCustomToast(
+        text: response.error ?? 'Verification failed',
         toastType: ToastTypesInfo(ToastTypes.error),
       );
       return false;

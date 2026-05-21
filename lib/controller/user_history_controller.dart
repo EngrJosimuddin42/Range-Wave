@@ -1,9 +1,10 @@
 import 'package:get/get.dart';
-
-import '../core/utils/color/app_colors.dart';
-import '../model/service_hisory_model.dart';
+import '../model/service_request_model.dart';
+import '../service/service_request_service.dart';
 
 class UserHistoryController extends GetxController {
+  final ServiceRequestService _service = ServiceRequestService();
+
   RxList<String> chips = <String>[
     'All',
     'Upcoming',
@@ -13,36 +14,30 @@ class UserHistoryController extends GetxController {
 
   RxInt selectedChipIndex = 0.obs;
 
-  final List<ServiceHistoryModel> serviceHistoryList = [
-    ServiceHistoryModel(
-      name: 'Mr. Alex',
-      carAndDate: 'Honda Civic/23 Oct 2025',
-      statusValue: '\$1250',
-      priceTextColor: AppColors.blue,
-      priceContainerColor: AppColors.blueLight,
-    ),
-    ServiceHistoryModel(
-      name: 'Mr. Alex',
-      carAndDate: 'Honda Civic/23 Oct 2025',
-      statusValue: '\$1250',
-      priceTextColor: AppColors.blue,
-      priceContainerColor: AppColors.blueLight,
-    ),
-    ServiceHistoryModel(
-      name: 'Mr. Alex',
-      carAndDate: 'Honda Civic/23 Oct 2025',
-      statusValue: 'Upcoming',
-      priceTextColor: AppColors.primary,
-      priceContainerColor: AppColors.orangeLight,
-    ),
-    ServiceHistoryModel(
-      name: 'Mr. Alex',
-      carAndDate: 'Honda Civic/23 Oct 2025',
-      statusValue: 'Running',
-      priceTextColor: AppColors.green,
-      priceContainerColor: AppColors.greenLight,
-    ),
-  ];
+  RxList<ServiceRequestModel> serviceHistoryList = <ServiceRequestModel>[].obs;
+  RxBool isLoading = false.obs;
 
+  @override
+  void onInit() {
+    super.onInit();
+    fetchHistoryData();
+  }
 
+  Future<void> fetchHistoryData() async {
+    try {
+      isLoading.value = true;
+      final result = await _service.getUserServiceHistory();
+
+      if (result.success && result.data != null) {
+        serviceHistoryList.value = result.data!;
+      } else {
+        Get.snackbar("Error", result.error ?? "Failed to load history");
+      }
+    } catch (e) {
+      print("Controller Exception: $e");
+      Get.snackbar("Error", "Something went wrong");
+    } finally {
+      isLoading.value = false;
+    }
+  }
 }

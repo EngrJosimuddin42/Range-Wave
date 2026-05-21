@@ -3,8 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:range_wave/core/utils/color/app_colors.dart';
-import '../../../core/navigation/app_routes.dart';
-import '../home/widget/service_history_card.dart';
 import '../../../controller/user_history_controller.dart';
 
 class UserHistoryScreen extends StatelessWidget {

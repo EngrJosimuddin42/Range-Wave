@@ -26,5 +26,6 @@ class ServiceRequestController extends GetxController {
   void onInit() {
     incomingServiceRequests();
     super.onInit();
+    print('===== ServiceRequestController onInit =====');
   }
 }

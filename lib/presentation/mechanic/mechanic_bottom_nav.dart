@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:range_wave/core/utils/color/app_colors.dart';
 import 'package:range_wave/presentation/chat/chat_list_screen.dart';
 import 'package:range_wave/presentation/mechanic/history/mechanic_history_screen.dart';
 import 'package:range_wave/presentation/mechanic/home/mechanic_home_screen.dart';
 import 'package:range_wave/presentation/mechanic/profile/mechanic_profile_screen.dart';
+import '../../controller/profile_controller.dart';
 import '../../gen/assets.gen.dart';
 
 class MechanicBottomNav extends StatefulWidget {
@@ -16,6 +18,15 @@ class MechanicBottomNav extends StatefulWidget {
 
 class _BottomNavState extends State<MechanicBottomNav> {
   int currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    final controller = Get.isRegistered<ProfileController>()
+        ? Get.find<ProfileController>()
+        : Get.put(ProfileController());
+    controller.loadProfile();
+  }
 
   List<Widget> pages = [
     MechanicHomeScreen(),

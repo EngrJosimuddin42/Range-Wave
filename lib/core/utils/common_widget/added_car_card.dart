@@ -65,7 +65,6 @@ class AddedCarCard extends StatelessWidget {
           SizedBox(height: 8.h),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-            child: Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -90,7 +89,6 @@ class AddedCarCard extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
           ),
         ],
       ),

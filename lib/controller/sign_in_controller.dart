@@ -5,12 +5,8 @@ import 'package:range_wave/service/auth_service.dart';
 
 class SignInController extends GetxController {
   final formKey = GlobalKey<FormState>();
-  final TextEditingController emailController = TextEditingController(
-    text: 'abid221@gmail.com',
-  );
-  final TextEditingController passwordController = TextEditingController(
-    text: 'abid1660',
-  );
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   RxString selectedRole = RxString('');
   RxBool isLoading = RxBool(false);

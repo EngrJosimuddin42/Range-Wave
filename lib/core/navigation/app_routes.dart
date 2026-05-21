@@ -4,6 +4,7 @@ class AppRoutes {
   static const String selectUser = '/select-user';
   static const String signIn = '/sign-in';
   static const String signUp = '/sign-up';
+  static const String verifyEmail = '/verify-email';
   static const String enterEmail = '/forgot-pass';
   static const String verifyOtp = '/verify-otp';
   static const String resetPass = '/reset-pass';

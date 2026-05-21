@@ -117,7 +117,7 @@ class EnableLocationScreen extends StatelessWidget {
                           Get.offAllNamed(AppRoutes.addCar);
                         } else if (role == 'mechanic') {
                           debugPrint('Navigating to MechanicEditProfile');
-                          Get.offAllNamed(AppRoutes.mechanicEditProfile);
+                          Get.offAllNamed(AppRoutes.mechanicEditProfile, arguments: {'fromSignup': true});
                         } else {
                           debugPrint(
                             'Role is null or unknown: $role. Falling back to selectUser',

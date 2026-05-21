@@ -17,10 +17,16 @@ import '../../../controller/signup_controller.dart';
 class SignupScreen extends StatelessWidget {
   SignupScreen({super.key});
 
-  final SignupController controller = Get.put(
-    SignupController(),
-    permanent: true,
-  );
+  final SignupController controller = () {
+    try {
+      final c = Get.find<SignupController>();
+      print('✅ SignupController found: role = ${c.selectedRole.value}');
+      return c;
+    } catch (e) {
+      print('❌ SignupController NOT found: $e');
+      return Get.put(SignupController(), permanent: true);
+    }
+  }();
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +37,9 @@ class SignupScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: 15.h),
               AppTopLogo(),
-              SizedBox(height: 100),
+              SizedBox(height: 100.h),
 
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -48,7 +55,7 @@ class SignupScreen extends StatelessWidget {
                       ),
                     ),
 
-                    SizedBox(height: 32),
+                    SizedBox(height: 32.h),
                     _formSection(controller),
 
                     SizedBox(height: 16.h),
@@ -186,7 +193,7 @@ Widget _formSection(SignupController controller) {
             if (controller.formKey.currentState!.validate()) {
               final okay = await controller.signup();
               if (okay) {
-                Get.offAllNamed(AppRoutes.enableLocation);
+                Get.offAllNamed(AppRoutes.verifyEmail);
               }
             }
           },

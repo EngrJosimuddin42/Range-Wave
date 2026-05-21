@@ -18,6 +18,8 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<UserProfileScreen> {
+  bool isNotificationOn = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,8 +88,7 @@ class _ProfileScreenState extends State<UserProfileScreen> {
                                 size: 16.w,
                               ),
                               SizedBox(width: 2.w),
-                              Text(
-                                '5.0',
+                              Text( '5.0',
                                 style: TextStyle(
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.w700,
@@ -144,7 +145,7 @@ class _ProfileScreenState extends State<UserProfileScreen> {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 2),
                     ),
@@ -162,6 +163,12 @@ class _ProfileScreenState extends State<UserProfileScreen> {
                     label: 'Push Notification',
                     onTap: () {},
                     isShowSwitchButton: true,
+                    switchValue: isNotificationOn,
+                    onSwitchChanged: (value) {
+                      setState(() {
+                        isNotificationOn = value;
+                      });
+                    },
                   ),
                   SizedBox(height: 20.h),
                   settingsOption(
@@ -296,6 +303,8 @@ class _ProfileScreenState extends State<UserProfileScreen> {
     required String label,
     required VoidCallback onTap,
     required bool isShowSwitchButton,
+    bool switchValue = true,
+    ValueChanged<bool>? onSwitchChanged,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -324,13 +333,42 @@ class _ProfileScreenState extends State<UserProfileScreen> {
             ],
           ),
           isShowSwitchButton
-              ? Switch(
-                  value: true,
-                  onChanged: (value) {},
-                  activeColor: AppColors.primary,
-                  inactiveTrackColor: AppColors.white,
-                )
-              : SizedBox.shrink(),
+              ? GestureDetector(
+            onTap: () {
+              if (onSwitchChanged != null) {
+                onSwitchChanged(!switchValue);
+              }
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              width: 38.w,
+              height: 20.h,
+              padding: EdgeInsets.symmetric(horizontal: 2.w),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: switchValue
+                      ? AppColors.blue
+                      : const Color(0xFF8A8A8A),
+                  width: .5),
+                borderRadius: BorderRadius.circular(20.r),
+                color: switchValue
+                    ? AppColors.blue
+                    : Colors.white),
+              alignment: switchValue ? Alignment.centerRight : Alignment.centerLeft,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: 16.w,
+                height: 16.w,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: switchValue
+                      ? Colors.white
+                      : const Color(0xFFB0B0B0),
+                ),
+              ),
+            ),
+          )
+              : const SizedBox.shrink(),
         ],
       ),
     );

@@ -7,7 +7,6 @@ import 'package:range_wave/core/utils/common_widget/icon_container.dart';
 import 'package:range_wave/core/utils/common_widget/primary_button.dart';
 import 'package:range_wave/controller/service_in_progress_controller.dart';
 import 'package:range_wave/presentation/user/home/widget/bill_row.dart';
-import 'package:range_wave/presentation/user/home/widget/mechanic_card.dart';
 import 'package:range_wave/core/utils/color/app_colors.dart';
 import 'package:range_wave/core/utils/common_widget/app_title.dart';
 import 'package:range_wave/core/utils/common_widget/app_top_section.dart';

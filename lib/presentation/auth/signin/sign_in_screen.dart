@@ -10,6 +10,9 @@ import 'package:range_wave/core/utils/common_widget/primary_button.dart';
 import 'package:range_wave/gen/assets.gen.dart';
 import 'package:range_wave/controller/sign_in_controller.dart';
 
+import '../../../core/utils/app_helper.dart';
+import '../../../core/utils/custom_toast.dart';
+
 class SignInScreen extends StatelessWidget {
   SignInScreen({super.key});
 
@@ -135,10 +138,17 @@ class SignInScreen extends StatelessWidget {
               onTap: () async {
                 if (controller.formKey.currentState!.validate()) {
                   final role = await controller.signin();
-                  if (role == 'customer') {
+                  final selectedRole = await AppHelper.instance.getRole();
+
+                  if (role == 'customer' && selectedRole == 'customer') {
                     Get.toNamed(AppRoutes.userBottomNav);
-                  } else if (role == 'mechanic') {
+                  } else if (role == 'mechanic' && selectedRole == 'mechanic') {
                     Get.toNamed(AppRoutes.mechanicBottomNav);
+                  } else if (role != null) {
+                    showCustomToast(
+                      text: 'Please select the correct role',
+                      toastType: ToastTypesInfo(ToastTypes.error),
+                    );
                   }
                 }
               },

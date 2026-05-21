@@ -9,10 +9,22 @@ import 'package:range_wave/core/navigation/app_routes.dart';
 import 'package:range_wave/core/utils/common_widget/primary_button.dart';
 import 'package:range_wave/gen/assets.gen.dart';
 
-class SelectUserScreen extends StatelessWidget {
-  SelectUserScreen({super.key});
+class SelectUserScreen extends StatefulWidget {
+  const SelectUserScreen({super.key});
 
-  final SignupController controller = Get.put(SignupController());
+  @override
+  State<SelectUserScreen> createState() => _SelectUserScreenState();
+}
+
+class _SelectUserScreenState extends State<SelectUserScreen> {
+  late final SignupController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.put(SignupController(), permanent: true);
+    print('✅ role = ${controller.selectedRole.value}');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +36,6 @@ class SelectUserScreen extends StatelessWidget {
             height: double.infinity,
             fit: BoxFit.cover,
           ),
-
           Positioned(
             left: 55.w,
             right: 55.w,
@@ -50,34 +61,40 @@ class SelectUserScreen extends StatelessWidget {
               ],
             ),
           ),
-
           Positioned(
             bottom: 120.h,
             left: 18.w,
             right: 18.w,
-            child: PrimaryButton(
+            child: Obx(() => PrimaryButton(
               text: 'User',
-              backgroundColor: AppColors.primary,
-              onTap: () {
+              backgroundColor: controller.selectedRole.value == 'customer' ||
+                  controller.selectedRole.value == ''
+                  ? AppColors.primary
+                  : null,
+              onTap: () async {
                 controller.selectedRole.value = 'customer';
                 AppHelper.instance.setRole('customer');
+                await Future.delayed(const Duration(milliseconds: 100));
                 Get.toNamed(AppRoutes.signIn);
               },
-            ),
+            )),
           ),
-
           Positioned(
             bottom: 54.h,
             left: 18.w,
             right: 18.w,
-            child: PrimaryButton(
+            child: Obx(() => PrimaryButton(
               text: 'Mechanic',
-              onTap: () {
+              backgroundColor: controller.selectedRole.value == 'mechanic'
+                  ? AppColors.primary
+                  : null,
+              onTap: () async {
                 controller.selectedRole.value = 'mechanic';
                 AppHelper.instance.setRole('mechanic');
+                await Future.delayed(const Duration(milliseconds: 100));
                 Get.toNamed(AppRoutes.signIn);
               },
-            ),
+            )),
           ),
         ],
       ),

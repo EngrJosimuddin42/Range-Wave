@@ -33,6 +33,7 @@ import '../../presentation/auth/signin/sign_in_screen.dart';
 import '../../presentation/auth/signup/add_car_screen.dart';
 import '../../presentation/auth/signup/enable_location_screen.dart';
 import '../../presentation/auth/signup/signup_screen.dart';
+import '../../presentation/auth/signup/verify_email_screen.dart';
 import '../../presentation/mechanic/home/mechanic_home_screen.dart';
 import '../../presentation/mechanic/profile/mechanic_change_password_screen.dart';
 import '../../presentation/mechanic/profile/mechanic_credit_card_screen.dart';
@@ -48,84 +49,43 @@ class AppPages {
     GetPage(name: AppRoutes.selectUser, page: () => SelectUserScreen()),
     GetPage(name: AppRoutes.signIn, page: () => SignInScreen()),
     GetPage(name: AppRoutes.signUp, page: () => SignupScreen()),
+    GetPage(name: AppRoutes.verifyEmail, page: () => VerifyEmailScreen()),
     GetPage(name: AppRoutes.enterEmail, page: () => EnterEmailScreen()),
     GetPage(name: AppRoutes.verifyOtp, page: () => VerifyOtpScreen()),
     GetPage(name: AppRoutes.resetPass, page: () => ResetPasswordScreen()),
     GetPage(name: AppRoutes.userHome, page: () => UserHomeScreen()),
     GetPage(name: AppRoutes.enableLocation, page: () => EnableLocationScreen()),
     GetPage(name: AppRoutes.addCar, page: () => AddCarScreen()),
-    GetPage(
-      name: AppRoutes.seeAllServiceHistory,
-      page: () => SeeAllServiceHistoryScreen(),
-    ),
+    GetPage(name: AppRoutes.seeAllServiceHistory, page: () => SeeAllServiceHistoryScreen()),
     GetPage(name: AppRoutes.userProfile, page: () => UserProfileScreen()),
     GetPage(name: AppRoutes.userEditProfile, page: () => UserEditProfile()),
     GetPage(name: AppRoutes.userPayment, page: () => UserPaymentScreen()),
     GetPage(name: AppRoutes.creditCard, page: () => CreditCardScreen()),
     GetPage(name: AppRoutes.carList, page: () => CarListScreen()),
     GetPage(name: AppRoutes.userBottomNav, page: () => UserBottomNavBar()),
-    GetPage(
-      name: AppRoutes.userChangePassword,
-      page: () => UserChangePasswordScreen(),
-    ),
+    GetPage(name: AppRoutes.userChangePassword, page: () => UserChangePasswordScreen()),
     GetPage(name: AppRoutes.userPrivacy, page: () => UserPrivacyScreen()),
     GetPage(name: AppRoutes.userHistory, page: () => UserHistoryScreen()),
-    GetPage(
-      name: AppRoutes.userScheduleService,
-      page: () => ScheduledServiceScreen(),
-    ),
-    GetPage(
-      name: AppRoutes.aiDetectedIssues,
-      page: () => AiDetectedIssueScreen(),
-    ),
-    GetPage(
-      name: AppRoutes.recommendedMatches,
-      page: () => RecommendedMatchesScreen(),
-    ),
-    GetPage(
-      name: AppRoutes.mechanicPortfolio,
-      page: () => MechanicPortfolioScreen(),
-    ),
+    GetPage(name: AppRoutes.userScheduleService, page: () => ScheduledServiceScreen()),
+    GetPage(name: AppRoutes.aiDetectedIssues, page: () => AiDetectedIssueScreen()),
+    GetPage(name: AppRoutes.recommendedMatches, page: () => RecommendedMatchesScreen()),
+    GetPage(name: AppRoutes.mechanicPortfolio, page: () => MechanicPortfolioScreen()),
     GetPage(name: AppRoutes.serviceInProgress, page: () => ServiceInProgress()),
     GetPage(name: AppRoutes.makePayment, page: () => MakePaymentScreen()),
     GetPage(name: AppRoutes.rateMechanic, page: () => RateMechanicScreen()),
-    GetPage(
-      name: AppRoutes.paymentSuccessful,
-      page: () => PaymentSuccessfulScreen(),
-    ),
+    GetPage(name: AppRoutes.paymentSuccessful, page: () => PaymentSuccessfulScreen()),
 
     /// ---------------------------------- Mechanic ------------------------------------ ///
     GetPage(name: AppRoutes.mechanicBottomNav, page: () => MechanicBottomNav()),
-    GetPage(
-      name: AppRoutes.mechanicProfile,
-      page: () => MechanicProfileScreen(),
-    ),
-    GetPage(
-      name: AppRoutes.mechanicEditProfile,
-      page: () => MechanicEditProfile(),
-    ),
-    GetPage(
-      name: AppRoutes.mechanicPayment,
-      page: () => MechanicPaymentScreen(),
-    ),
-    GetPage(
-      name: AppRoutes.mechanicCreditCard,
-      page: () => MechanicCreditCardScreen(),
-    ),
-    GetPage(
-      name: AppRoutes.mechanicChangePassword,
-      page: () => MechanicChangePasswordScreen(),
-    ),
-    GetPage(
-      name: AppRoutes.mechanicHistoryDetails,
-      page: () => MechanicHistoryDetails(),
-    ),
+    GetPage(name: AppRoutes.mechanicProfile, page: () => MechanicProfileScreen()),
+    GetPage(name: AppRoutes.mechanicEditProfile, page: () => MechanicEditProfile()),
+    GetPage(name: AppRoutes.mechanicPayment, page: () => MechanicPaymentScreen()),
+    GetPage(name: AppRoutes.mechanicCreditCard, page: () => MechanicCreditCardScreen()),
+    GetPage(name: AppRoutes.mechanicChangePassword, page: () => MechanicChangePasswordScreen()),
+    GetPage(name: AppRoutes.mechanicHistoryDetails, page: () => MechanicHistoryDetails()),
     GetPage(name: AppRoutes.setTime, page: () => SetTimeScreen()),
     GetPage(name: AppRoutes.mechanicHome, page: () => MechanicHomeScreen()),
-    GetPage(
-      name: AppRoutes.mechanicPaymentHistory,
-      page: () => PaymentHistory(),
-    ),
+    GetPage(name: AppRoutes.mechanicPaymentHistory, page: () => PaymentHistory()),
     GetPage(name: AppRoutes.mapScreen, page: () => MapScreen()),
     GetPage(name: AppRoutes.notification, page: () => NotificationScreen()),
 

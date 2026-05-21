@@ -1,9 +1,11 @@
 import 'package:get/get.dart';
-
-import '../core/utils/color/app_colors.dart';
-import '../model/service_hisory_model.dart';
+import '../model/service_request_model.dart';
+import '../service/service_request_service.dart';
 
 class MechanicHistoryController extends GetxController {
+  final ServiceRequestService _service = ServiceRequestService();
+
+  // চিপসের লিস্ট
   RxList<String> chips = <String>[
     'All',
     'Upcoming',
@@ -13,36 +15,41 @@ class MechanicHistoryController extends GetxController {
 
   RxInt selectedChipIndex = 0.obs;
 
-  final List<ServiceHistoryModel> serviceHistoryList = [
-    ServiceHistoryModel(
-      name: 'Honda Civic',
-      carAndDate: 'Honda Civic/23 Oct 2025',
-      statusValue: '\$1250',
-      priceTextColor: AppColors.blue,
-      priceContainerColor: AppColors.blueLight,
-    ),
-    ServiceHistoryModel(
-      name: 'Honda Civic',
-      carAndDate: 'Honda Civic/23 Oct 2025',
-      statusValue: '\$1250',
-      priceTextColor: AppColors.blue,
-      priceContainerColor: AppColors.blueLight,
-    ),
-    ServiceHistoryModel(
-      name: 'Mr. Alex',
-      carAndDate: 'Honda Civic/23 Oct 2025',
-      statusValue: 'Upcoming',
-      priceTextColor: AppColors.primary,
-      priceContainerColor: AppColors.orangeLight,
-    ),
-    ServiceHistoryModel(
-      name: 'Honda Civic',
-      carAndDate: 'Honda Civic/23 Oct 2025',
-      statusValue: 'Running',
-      priceTextColor: AppColors.green,
-      priceContainerColor: AppColors.greenLight,
-    ),
-  ];
+  RxList<ServiceRequestModel> mechanicHistoryList = <ServiceRequestModel>[].obs;
+  RxBool isLoading = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    print('===== MechanicHistoryController onInit =====');
+    fetchMechanicHistory(chips[selectedChipIndex.value]);
+  }
 
 
+  void changeChipIndex(int index) {
+    selectedChipIndex.value = index;
+    fetchMechanicHistory(chips[index]);
+  }
+
+  Future<void> fetchMechanicHistory(String status) async {
+    try {
+      isLoading.value = true;
+      final String apiStatus = status == 'All' ? '' : status.toLowerCase();
+      final result = await _service.getServiceRequests(apiStatus);
+
+      print('HISTORY API: success=${result.success}, error=${result.error}, data=${result.data}');
+
+
+      if (result.success && result.data != null) {
+        mechanicHistoryList.value = result.data!;
+      } else {
+        Get.snackbar("Error", result.error ?? "Failed to load mechanic history");
+      }
+    } catch (e) {
+      print("Mechanic Controller Exception: $e");
+      Get.snackbar("Error", "Something went wrong");
+    } finally {
+      isLoading.value = false;
+    }
+  }
 }

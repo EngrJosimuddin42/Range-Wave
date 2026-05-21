@@ -24,8 +24,7 @@ class CarListScreen extends StatelessWidget {
       backgroundColor: AppColors.surface,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
-        title: Text(
-          'Car List',
+        title: Text( 'Car List',
           style: TextStyle(
             fontSize: 20.sp,
             fontWeight: FontWeight.w500,
@@ -62,8 +61,7 @@ class CarListScreen extends StatelessWidget {
                                 AppTitle(
                                   title: 'My Cars',
                                   isShowAll: false,
-                                  onTap: () {},
-                                ),
+                                  onTap: () {}),
                                 SizedBox(height: 20.h),
                                 SizedBox(
                                   height: 160.h,
@@ -87,15 +85,13 @@ class CarListScreen extends StatelessWidget {
                             ),
                     ),
                     AppTitle(
-                      title: 'Add Your Car',
+                      title: 'Add Another Car',
                       isShowAll: false,
                       onTap: () {},
                     ),
 
                     SizedBox(height: 20.h),
-                    Obx(() {
-                      return _dottedContainer(controller: controller);
-                    }),
+                    _dottedContainer(controller: controller),
                     SizedBox(height: 16.h),
 
                     CustomTextField(

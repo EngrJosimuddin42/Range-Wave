@@ -6,10 +6,10 @@ import 'package:range_wave/controller/service_request_controller.dart';
 import 'package:range_wave/core/utils/common_widget/app_title.dart';
 import 'package:range_wave/core/utils/common_widget/primary_button.dart';
 import 'package:range_wave/model/service_request_model.dart';
+import '../../../controller/mechanic_history_controller.dart';
 import '../../../core/navigation/app_routes.dart';
 import '../../../core/utils/color/app_colors.dart';
 import '../../../gen/assets.gen.dart';
-import '../../../model/service_hisory_model.dart';
 import '../../user/home/widget/service_history_card.dart';
 
 class MechanicHomeScreen extends StatefulWidget {
@@ -21,47 +21,22 @@ class MechanicHomeScreen extends StatefulWidget {
 
 class _MechanicHomeScreenState extends State<MechanicHomeScreen> {
   bool isOnline = true;
-  ServiceRequestController serviceRequestController = Get.put(
-    ServiceRequestController(),
-  );
 
-  final List<ServiceHistoryModel> serviceHistoryList = [
-    ServiceHistoryModel(
-      name: 'Honda Civic',
-      carAndDate: 'Honda Civic/23 Oct 2025',
-      statusValue: 'Repairing',
-      priceTextColor: AppColors.textPrimary,
-      priceContainerColor: AppColors.white,
-    ),
-    ServiceHistoryModel(
-      name: 'Honda Civic',
-      carAndDate: 'Honda Civic/23 Oct 2025',
-      statusValue: 'Start Service',
-      priceTextColor: AppColors.textPrimary,
-      priceContainerColor: AppColors.white,
-    ),
-    ServiceHistoryModel(
-      name: 'Honda Civic',
-      carAndDate: 'Honda Civic/23 Oct 2025',
-      statusValue: 'Inspecting',
-      priceTextColor: AppColors.textPrimary,
-      priceContainerColor: AppColors.white,
-    ),
-    ServiceHistoryModel(
-      name: 'Honda Civic',
-      carAndDate: 'Honda Civic/23 Oct 2025',
-      statusValue: 'Upcoming',
-      priceTextColor: AppColors.primary,
-      priceContainerColor: AppColors.orangeLight,
-    ),
-    ServiceHistoryModel(
-      name: 'Honda Civic',
-      carAndDate: 'Honda Civic/23 Oct 2025',
-      statusValue: '\$1250',
-      priceTextColor: AppColors.green,
-      priceContainerColor: AppColors.greenLight,
-    ),
-  ];
+  late final ServiceRequestController serviceRequestController;
+  late final MechanicHistoryController mechanicHistoryController;
+
+  @override
+  void initState() {
+    super.initState();
+    serviceRequestController = Get.isRegistered<ServiceRequestController>()
+        ? Get.find<ServiceRequestController>()
+        : Get.put(ServiceRequestController());
+
+    mechanicHistoryController = Get.isRegistered<MechanicHistoryController>()
+        ? Get.find<MechanicHistoryController>()
+        : Get.put(MechanicHistoryController());
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -133,16 +108,60 @@ class _MechanicHomeScreenState extends State<MechanicHomeScreen> {
 
               SizedBox(height: 20.h),
 
-              AppTitle(title: 'Jobs List', isShowAll: true, onTap: () {}),
+              AppTitle(
+                  title: 'Jobs List',
+                  isShowAll: true,
+                  onTap: () {
 
-              // ListView.builder(
-              //   shrinkWrap: true,
-              //   physics: const NeverScrollableScrollPhysics(),
-              //   itemCount: serviceHistoryList.length,
-              //   itemBuilder: (context, index) {
-              //     return ServiceHistoryCard(data: serviceHistoryList[index]);
-              //   },
-              // ),
+                    // Get.toNamed(AppRoutes.mechanicAllJobs);
+                  }
+              ),
+
+              SizedBox(height: 12.h),
+
+              // ================= JOBS LIST API SECTION =================
+              Obx(() {
+                if (mechanicHistoryController.isLoading.value) {
+                  return  Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical:20.h),
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+
+                if (mechanicHistoryController.mechanicHistoryList.isEmpty) {
+                  return Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20.h),
+                      child: Text(
+                        "No jobs found.",
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: AppColors.textTernary,
+                          fontFamily: GoogleFonts.manrope().fontFamily,
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: mechanicHistoryController.mechanicHistoryList.length,
+                  itemBuilder: (context, index) {
+                    final bookingData = mechanicHistoryController.mechanicHistoryList[index];
+
+                    return ServiceHistoryCard(
+                      data: bookingData,
+                      onTap: () {
+                        Get.toNamed(AppRoutes.serviceInProgress);
+                      },
+                    );
+                  },
+                );
+              }),
               SizedBox(height: 50.h),
             ],
           ),
@@ -174,14 +193,42 @@ class _MechanicHomeScreenState extends State<MechanicHomeScreen> {
                 ),
               ),
               SizedBox(width: 12.w),
-              Switch(
-                value: isOnline,
-                onChanged: (value) {
+
+              GestureDetector(
+                onTap: () {
                   setState(() {
-                    isOnline = value;
+                    isOnline = !isOnline;
                   });
                 },
-                activeTrackColor: AppColors.blue,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: 38.w,
+                  height: 20.h,
+                  padding: EdgeInsets.symmetric(horizontal: 2.w),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: isOnline
+                          ? AppColors.blue
+                          : const Color(0xFF8A8A8A),
+                      width: .5),
+                    borderRadius: BorderRadius.circular(20.r),
+                    color: isOnline
+                        ? AppColors.blue
+                        : Colors.white,
+                  ),
+                  alignment: isOnline ? Alignment.centerRight : Alignment.centerLeft,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 16.w,
+                    height: 16.w,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isOnline
+                          ? Colors.white
+                          : const Color(0xFFB0B0B0),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -283,7 +330,7 @@ class IncomingJobCard extends StatelessWidget {
                 width: 60.w,
                 child: LinearProgressIndicator(
                   value: 0.7,
-                  backgroundColor: AppColors.blue.withOpacity(0.2),
+                  backgroundColor: AppColors.blue.withValues(alpha: 0.2),
                   valueColor: AlwaysStoppedAnimation(AppColors.blue),
                 ),
               ),

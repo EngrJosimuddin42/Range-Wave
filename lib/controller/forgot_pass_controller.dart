@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:range_wave/core/utils/app_helper.dart';
 import 'package:range_wave/core/utils/custom_toast.dart';
-import 'package:range_wave/presentation/auth/forgot_pass/verify_otp_screen.dart';
 import 'package:range_wave/service/auth_service.dart';
 
 class ForgotPassController extends GetxController {

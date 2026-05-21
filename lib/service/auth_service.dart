@@ -37,6 +37,7 @@ class AuthService {
 
         return ApiResponse.success(true);
       } else {
+        print('❌ SIGNUP FAILED: status=${response.statusCode} error=${response.error}');
         return ApiResponse.error(response.error ?? 'Signup failed');
       }
     } catch (e) {
@@ -47,13 +48,16 @@ class AuthService {
 
   /// ------------------------- signup Email verification --------------------------------- ///
   Future<ApiResponse<LoginModel>> verifyEmailSign(
-    String verificationCode,
-    String userId,
-  ) async {
+      String verificationCode,
+      String userId,
+      ) async {
     try {
       final response = await CustomHttp.post(
-        endpoint: 'auth/verify-email',
-        body: {'user_id': userId, 'verification_code': verificationCode},
+        endpoint: 'auth/verify-user',
+        body: {
+          'user_id': userId,
+          'code': verificationCode,
+        },
         needAuth: false,
         showFloatingError: false,
       );

@@ -92,6 +92,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/profile.svg
   SvgGenImage get profile => const SvgGenImage('assets/icons/profile.svg');
 
+  /// File path: assets/icons/profile_edit.svg
+  SvgGenImage get profile_edit => const SvgGenImage('assets/icons/profile_edit.svg');
+
   /// File path: assets/icons/profile_filled.svg
   SvgGenImage get profileFilled =>
       const SvgGenImage('assets/icons/profile_filled.svg');

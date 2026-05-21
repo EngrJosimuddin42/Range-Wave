@@ -16,6 +16,8 @@ import '../../../../core/utils/common_widget/added_car_card.dart';
 import '../../../../core/utils/common_widget/app_top_section.dart';
 import '../../../../core/utils/common_widget/custom_text_field.dart';
 import '../../../../gen/assets.gen.dart';
+import '../../../core/utils/app_helper.dart';
+import '../../../service/car_service.dart';
 
 // ── Holds all state for one "Add Car" form entry ──────────────────────────
 class _CarFormEntry {
@@ -75,21 +77,30 @@ class _AddCarScreenState extends State<AddCarScreen> {
     final form = _forms[index];
     setState(() => form.isLoading = true);
 
-    // Pass this form's data into the shared controller
     controller.brandNameController.text = form.brand.text;
     controller.modelNameController.text = form.model.text;
     controller.codeController.text = form.code.text;
     controller.yearController.text = form.year.text;
     controller.licensePlateController.text = form.licensePlate.text;
     controller.tagNumberController.text = form.tagNumber.text;
-    controller.selectedImages.assignAll(
-      form.image != null ? [form.image!] : [],
-    );
+
+    if (form.image != null) {
+      final token = await AppHelper.instance.getAccessToken();
+      if (token != null) {
+        final resp = await CarService().addCarImage(
+          File(form.image!.path),
+          token,
+        );
+        if (resp.success && resp.data != null) {
+          controller.uploadedImageIds.assignAll([resp.data!]);
+        }
+      }
+    }
 
     final success = await controller.customerAddCar();
 
     if (success == true) {
-      _removeForm(index); // collapse this section; carList Obx updates above
+      _removeForm(index);
     } else {
       setState(() => form.isLoading = false);
     }
