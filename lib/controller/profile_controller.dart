@@ -201,17 +201,28 @@ class ProfileController extends GetxController {
     }
   }
 
+
+
   Future<bool> changePassword() async {
     isLoading.value = true;
+
     final response = await _profileService.changePassword(
-      newPasswordController.text.trim(),
-      oldPasswordController.text.trim(),
+      oldPassword: oldPasswordController.text.trim(),
+      newPassword: newPasswordController.text.trim(),
     );
-    if (response.data != null) {
-      isLoading.value = false;
+
+    isLoading.value = false;
+
+    if (response.success && response.data != null) {
+      showCustomToast(
+        text: 'Password updated successfully',
+        toastType: ToastTypesInfo(ToastTypes.success),
+      );
+      oldPasswordController.clear();
+      newPasswordController.clear();
+      confirmPasswordController.clear();
       return true;
     } else {
-      isLoading.value = false;
       showCustomToast(
         text: response.error ?? 'Something went wrong',
         toastType: ToastTypesInfo(ToastTypes.error),

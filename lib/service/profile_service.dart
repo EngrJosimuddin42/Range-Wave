@@ -5,15 +5,20 @@ import 'package:range_wave/core/utils/app_helper.dart';
 import 'package:range_wave/core/utils/custom_http.dart';
 
 class ProfileService {
-  Future<ApiResponse<bool>> changePassword(
-      String newPassword,
-      String oldPassword,
-      ) async {
+
+
+  Future<ApiResponse<bool>> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
     try {
       final response = await CustomHttp.post(
         endpoint: 'auth/update-password',
         needAuth: true,
-        body: {'new_password': newPassword, 'old_password': oldPassword},
+        body: {
+          'new_password': newPassword,
+          'old_password': oldPassword,
+        },
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         return ApiResponse.success(true);

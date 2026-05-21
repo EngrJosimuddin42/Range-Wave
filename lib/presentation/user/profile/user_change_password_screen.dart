@@ -5,20 +5,24 @@ import '../../../controller/profile_controller.dart';
 import '../../../core/utils/color/app_colors.dart';
 import '../../../core/utils/common_widget/custom_text_field.dart';
 import '../../../core/utils/common_widget/primary_button.dart';
-import '../../../core/utils/custom_toast.dart';
 
 class UserChangePasswordScreen extends StatelessWidget {
   UserChangePasswordScreen({super.key});
 
-  final ProfileController controller = Get.put(ProfileController());
+  final ProfileController controller = Get.isRegistered<ProfileController>()
+      ? Get.find<ProfileController>()
+      : Get.put(ProfileController());
+
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.surface,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
-        title: Text('Change Password'),
+        title: const Text('Change Password'),
+        elevation: 0,
       ),
       body: SafeArea(
         child: Container(
@@ -73,7 +77,7 @@ class UserChangePasswordScreen extends StatelessWidget {
                 ),
                 const Spacer(),
                 Obx(
-                  () => PrimaryButton(
+                      () => PrimaryButton(
                     text: 'Update',
                     backgroundColor: AppColors.primary,
                     loading: controller.isLoading.value,
@@ -86,10 +90,6 @@ class UserChangePasswordScreen extends StatelessWidget {
                       if (_formKey.currentState!.validate()) {
                         final success = await controller.changePassword();
                         if (success) {
-                          showCustomToast(
-                            text: 'Password changed successfully',
-                            toastType: ToastTypesInfo(ToastTypes.success),
-                          );
                           Get.back();
                         }
                       }
