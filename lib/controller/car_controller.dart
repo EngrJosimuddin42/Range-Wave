@@ -1,44 +1,50 @@
 import 'dart:io';
-
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:range_wave/core/utils/app_helper.dart';
 import 'package:range_wave/core/utils/custom_toast.dart';
-import 'package:range_wave/model/customer_car_list.dart';
+import 'package:range_wave/model/car_list_model.dart';
 import 'package:range_wave/service/car_service.dart';
 
 class CarController extends GetxController {
   final CarService _carService = CarService();
 
   RxList<CarListModel> carList = RxList<CarListModel>();
-  RxBool isLoading = RxBool(false);
+  RxBool isLoading  = RxBool(false);
   RxBool isLoading2 = RxBool(false);
   RxBool isImageLoading = RxBool(false);
-  TextEditingController brandNameController = TextEditingController();
-  TextEditingController modelNameController = TextEditingController();
-  TextEditingController yearController = TextEditingController();
+
+  TextEditingController brandNameController    = TextEditingController();
+  TextEditingController modelNameController    = TextEditingController();
+  TextEditingController yearController         = TextEditingController();
   TextEditingController licensePlateController = TextEditingController();
-  TextEditingController tagNumberController = TextEditingController();
-  TextEditingController codeController = TextEditingController();
-  final RxList<XFile> selectedImages = RxList<XFile>([]);
+  TextEditingController tagNumberController    = TextEditingController();
+  TextEditingController codeController         = TextEditingController();
+
+  final RxList<XFile>  selectedImages   = RxList<XFile>([]);
   final RxList<String> uploadedImageIds = RxList<String>([]);
 
   @override
   void onInit() {
-    getCars();
     super.onInit();
+    getCars();
   }
+
 
   Future<void> getImages() async {
     final picker = ImagePicker();
-    final List<XFile> files = await picker.pickMultiImage();
+    final XFile? file = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 70,
+      maxWidth: 800,
+      maxHeight: 800,
+    );
 
-    if (files.isNotEmpty) {
-      selectedImages.addAll(files);
-      for (var file in files) {
-        await _uploadImage(file);
-      }
+    if (file != null) {
+      selectedImages.assignAll([file]);
+      uploadedImageIds.clear();
+      await _uploadImage(file);
     }
   }
 
@@ -55,6 +61,7 @@ class CarController extends GetxController {
             toastType: ToastTypesInfo(ToastTypes.success),
           );
         } else {
+          selectedImages.clear();
           showCustomToast(
             text: resp.error ?? 'Image upload failed',
             toastType: ToastTypesInfo(ToastTypes.error),
@@ -62,6 +69,7 @@ class CarController extends GetxController {
         }
       }
     } catch (e) {
+      selectedImages.clear();
       debugPrint('IMAGE PICK/UPLOAD ERROR: $e');
     } finally {
       isImageLoading.value = false;
@@ -77,9 +85,9 @@ class CarController extends GetxController {
     }
   }
 
+
   Future<void> getCars({bool force = false}) async {
     if (carList.isNotEmpty && !force) return;
-
     final token = await AppHelper.instance.getAccessToken();
     if (token == null) {
       debugPrint('Aborting getCars: No access token found.');
@@ -87,19 +95,38 @@ class CarController extends GetxController {
     }
 
     isLoading2.value = true;
-    final response = await _carService.getCustomerCarList();
-    if (response.data != null) {
-      isLoading2.value = false;
-      carList.assignAll(response.data ?? []);
-    } else {
+
+    try {
+      final response = await _carService.getCustomerCarList();
+      if (response.data != null) {
+        carList.assignAll(response.data ?? []);
+      }
+    } catch (e) {
+      debugPrint('Error fetching cars in controller: $e');
+    } finally {
       isLoading2.value = false;
     }
   }
 
   Future<bool> customerAddCar() async {
+    //  validation
+    if (brandNameController.text.trim().isEmpty ||
+        modelNameController.text.trim().isEmpty ||
+        yearController.text.trim().isEmpty ||
+        licensePlateController.text.trim().isEmpty ||
+        tagNumberController.text.trim().isEmpty) {
+      showCustomToast(
+        text: 'Please fill all required fields',
+        toastType: ToastTypesInfo(ToastTypes.error),
+      );
+      return false;
+    }
+
     isLoading.value = true;
 
-    final String carImageIds = uploadedImageIds.join(',');
+    final String carImageId = uploadedImageIds.isNotEmpty
+        ? uploadedImageIds.first
+        : '';
 
     final response = await _carService.customerAddCar(
       brandNameController.text.trim(),
@@ -107,7 +134,7 @@ class CarController extends GetxController {
       yearController.text.trim(),
       licensePlateController.text.trim(),
       tagNumberController.text.trim(),
-      carImageIds,
+      carImageId,
     );
 
     if (response.data != null) {

@@ -22,7 +22,7 @@ class AppRoutes {
   static const String userChangePassword = '/user-change-pass-screen';
   static const String userPrivacy = '/user-privacy-screen';
   static const String userHistory = '/user-history-screen';
-  static const String userScheduleService = '/user-schedule-screen';
+  static const String userScheduleService = '/scheduled-service-screen';
   static const String aiDetectedIssues = '/ai-detected-issues-screen';
   static const String recommendedMatches = '/recommended-matches-screen';
   static const String mechanicPortfolio = '/mechanic-portfolio-screen';
@@ -39,12 +39,10 @@ class AppRoutes {
   static const String mechanicCreditCard = '/mechanic-credit-card-screen';
   static const String mechanicChangePassword = '/mechanic-change-pass-screen';
   static const String mechanicHistory = '/mechanic-history-screen';
-  static const String mechanicHistoryDetails =
-      '/mechanic-history-details-screen';
+  static const String mechanicHistoryDetails = '/mechanic-history-details-screen';
   static const String setTime = '/set-time-screen';
   static const String mechanicHome = '/mechanic-home-screen';
-  static const String mechanicPaymentHistory =
-      '/mechanic-payment-history-screen';
+  static const String mechanicPaymentHistory = '/mechanic-payment-history-screen';
   static const String mapScreen = '/map-screen';
   static const String notification = '/notification-screen';
 

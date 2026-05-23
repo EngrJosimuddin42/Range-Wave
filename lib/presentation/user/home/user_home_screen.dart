@@ -13,6 +13,7 @@ import '../../../core/utils/color/app_colors.dart';
 import '../../../gen/assets.gen.dart';
 
 class UserHomeScreen extends StatelessWidget {
+
   UserHomeScreen({super.key});
 
   @override

@@ -16,15 +16,22 @@ import '../../../../gen/assets.gen.dart';
 class CarListScreen extends StatelessWidget {
   CarListScreen({super.key});
 
-  final CarController controller = Get.find<CarController>();
+  final CarController controller = Get.isRegistered<CarController>()
+      ? Get.find<CarController>()
+      : Get.put(CarController());
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.getCars(force: true);
+      controller.clearForm();
+    });
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
-        title: Text( 'Car List',
+        title: Text(
+          'Car List',
           style: TextStyle(
             fontSize: 20.sp,
             fontWeight: FontWeight.w500,
@@ -43,55 +50,59 @@ class CarListScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // ── My Cars section
                     Obx(
-                      () => controller.isLoading2.value
+                          () => controller.isLoading2.value
                           ? Padding(
-                              padding: EdgeInsets.symmetric(vertical: 20.h),
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            )
+                        padding: EdgeInsets.symmetric(vertical: 20.h),
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      )
                           : controller.carList.isEmpty
                           ? const SizedBox.shrink()
                           : Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                AppTitle(
-                                  title: 'My Cars',
-                                  isShowAll: false,
-                                  onTap: () {}),
-                                SizedBox(height: 20.h),
-                                SizedBox(
-                                  height: 160.h,
-                                  child: ListView.separated(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: controller.carList.length,
-                                    separatorBuilder: (context, index) =>
-                                        SizedBox(width: 16.w),
-                                    itemBuilder: (context, index) {
-                                      final car = controller.carList[index];
-                                      return AddedCarCard(
-                                        carName: car.brand,
-                                        carModel: car.model,
-                                        image: car.imageUrl,
-                                      );
-                                    },
-                                  ),
-                                ),
-                                SizedBox(height: 24.h),
-                              ],
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AppTitle(
+                            title: 'My Cars',
+                            isShowAll: false,
+                            onTap: () {},
+                          ),
+                          SizedBox(height: 20.h),
+                          SizedBox(
+                            height: 160.h,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: controller.carList.length,
+                              separatorBuilder: (context, index) =>
+                                  SizedBox(width: 16.w),
+                              itemBuilder: (context, index) {
+                                final car = controller.carList[index];
+                                return AddedCarCard(
+                                  carName: car.brand,
+                                  carModel: car.model,
+                                  image: car.imageUrl,
+                                );
+                              },
                             ),
+                          ),
+                          SizedBox(height: 24.h),
+                        ],
+                      ),
                     ),
+
                     AppTitle(
                       title: 'Add Another Car',
                       isShowAll: false,
                       onTap: () {},
                     ),
-
                     SizedBox(height: 20.h),
-                    _dottedContainer(controller: controller),
+
+                    // ── Single image picker
+                    _SingleImagePicker(controller: controller),
                     SizedBox(height: 16.h),
 
                     CustomTextField(
@@ -134,8 +145,8 @@ class CarListScreen extends StatelessWidget {
                             lastDate: DateTime(DateTime.now().year + 5),
                           );
                           if (picked != null) {
-                            controller.yearController.text = picked.year
-                                .toString(); // only year
+                            controller.yearController.text =
+                                picked.year.toString();
                           }
                         },
                         icon: Icon(
@@ -161,9 +172,9 @@ class CarListScreen extends StatelessWidget {
                       hintText: 'Enter tag number',
                       keyboardType: TextInputType.text,
                     ),
-
                     SizedBox(height: 32.h),
 
+                    // ── Save button
                     Obx(() {
                       return PrimaryButton(
                         loading: controller.isLoading.value,
@@ -173,7 +184,7 @@ class CarListScreen extends StatelessWidget {
                           color: AppColors.white,
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
-                          fontStyle: GoogleFonts.manrope().fontStyle,
+                          fontFamily: GoogleFonts.manrope().fontFamily,
                         ),
                         onTap: () async {
                           final okay = await controller.customerAddCar();
@@ -199,9 +210,97 @@ class CarListScreen extends StatelessWidget {
   }
 }
 
-Widget _dottedContainer({required CarController controller}) {
-  return Obx(() {
-    if (controller.selectedImages.isEmpty) {
+// ── Single image picker widget
+class _SingleImagePicker extends StatelessWidget {
+  final CarController controller;
+
+  const _SingleImagePicker({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      if (controller.selectedImages.isNotEmpty) {
+        final image = controller.selectedImages.first;
+        return GestureDetector(
+          onTap: controller.isImageLoading.value ? null : controller.getImages,
+          child: Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12.r),
+                child: Image.file(
+                  File(image.path),
+                  width: double.infinity,
+                  height: 160.h,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              // "Tap to change" overlay
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 6.h),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(12.r),
+                      bottomRight: Radius.circular(12.r),
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Tap to change',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+              //  Remove button
+              Positioned(
+                top: 6.h,
+                right: 6.w,
+                child: GestureDetector(
+                  onTap: () => controller.removeImage(0),
+                  child: Container(
+                    padding: EdgeInsets.all(4.w),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.close,
+                      color: Colors.white,
+                      size: 16.w,
+                    ),
+                  ),
+                ),
+              ),
+              //  Upload loading overlay
+              if (controller.isImageLoading.value)
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      }
+
+      //  Image নেই — upload area দেখাও
       return DottedBorder(
         options: RectDottedBorderOptions(
           color: AppColors.hintText.withValues(alpha: 0.6),
@@ -209,7 +308,7 @@ Widget _dottedContainer({required CarController controller}) {
           dashPattern: [6, 3],
         ),
         child: GestureDetector(
-          onTap: controller.getImages,
+          onTap: controller.isImageLoading.value ? null : controller.getImages,
           child: Container(
             width: double.infinity,
             padding: EdgeInsets.symmetric(vertical: 20.h),
@@ -233,18 +332,18 @@ Widget _dottedContainer({required CarController controller}) {
                 SizedBox(height: 10.h),
                 Text(
                   controller.isImageLoading.value
-                      ? "Uploading photo..."
-                      : "Upload Car Photo",
+                      ? 'Uploading photo...'
+                      : 'Upload Car Photo',
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w500,
-                    fontStyle: GoogleFonts.manrope().fontStyle,
+                    fontFamily: GoogleFonts.manrope().fontFamily,
                   ),
                 ),
                 SizedBox(height: 6.h),
                 Text(
-                  "Tap to add a photo (Optimal)",
+                  'Tap to add a photo (Optional)',
                   style: TextStyle(
                     color: AppColors.textTernary.withValues(alpha: 0.5),
                     fontSize: 12.sp,
@@ -256,107 +355,6 @@ Widget _dottedContainer({required CarController controller}) {
           ),
         ),
       );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 110.h,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: controller.selectedImages.length + 1,
-            separatorBuilder: (context, index) => SizedBox(width: 12.w),
-            itemBuilder: (context, index) {
-              if (index == controller.selectedImages.length) {
-                // Add more button
-                return GestureDetector(
-                  onTap: controller.getImages,
-                  child: DottedBorder(
-                    options: RectDottedBorderOptions(
-                      color: AppColors.hintText.withValues(alpha: 0.6),
-                      strokeWidth: 2,
-                      dashPattern: [4, 2],
-                    ),
-                    child: Container(
-                      width: 100.w,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.add_a_photo_outlined,
-                            color: AppColors.primary,
-                            size: 24.w,
-                          ),
-                          SizedBox(height: 4.h),
-                          Text(
-                            "Add More",
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }
-
-              final image = controller.selectedImages[index];
-              return Stack(
-                children: [
-                  Container(
-                    width: 100.w,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12.r),
-                      image: DecorationImage(
-                        image: FileImage(File(image.path)),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 4.h,
-                    right: 4.w,
-                    child: GestureDetector(
-                      onTap: () => controller.removeImage(index),
-                      child: Container(
-                        padding: EdgeInsets.all(4.w),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.5),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.close,
-                          color: Colors.white,
-                          size: 14.w,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-        if (controller.isImageLoading.value)
-          Padding(
-            padding: EdgeInsets.only(top: 8.h),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(4.r),
-              child: LinearProgressIndicator(
-                color: AppColors.primary,
-                backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                minHeight: 4.h,
-              ),
-            ),
-          ),
-      ],
-    );
-  });
+    });
+  }
 }

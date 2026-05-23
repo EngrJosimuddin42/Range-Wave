@@ -9,6 +9,7 @@ import 'package:range_wave/core/utils/common_widget/chips_button.dart';
 import 'package:range_wave/core/utils/common_widget/primary_button.dart';
 import 'package:range_wave/controller/sign_in_controller.dart';
 import '../../../controller/profile_controller.dart';
+import '../../../core/utils/app_helper.dart';
 import '../../../gen/assets.gen.dart';
 
 class MechanicProfileScreen extends StatefulWidget {
@@ -65,6 +66,7 @@ class _ProfileScreenState extends State<MechanicProfileScreen> {
         final email = controller.mechanicData['email'] ?? '';
         final serviceArea = controller.mechanicData['service_area'] ?? '';
         final imageUrl = controller.profileImageUrl.value;
+        final rating   = controller.mechanicData['avg_rating']?.toString() ?? '0';
         final specialists = controller.specialistList.toList();
 
         return SingleChildScrollView(
@@ -122,7 +124,7 @@ class _ProfileScreenState extends State<MechanicProfileScreen> {
                                   size: 16.w,
                                 ),
                                 SizedBox(width: 2.w),
-                                Text( '5.0',
+                                Text(  rating,
                                   style: TextStyle(
                                     fontSize: 14.sp,
                                     fontWeight: FontWeight.w700,
@@ -310,7 +312,8 @@ class _ProfileScreenState extends State<MechanicProfileScreen> {
                       text: 'Yes',
                       borderColor: AppColors.textPrimary.withValues(alpha: 0.5),
                       textStyle: TextStyle(color: AppColors.textPrimary),
-                      onTap: () {
+                      onTap: () async {
+                        await AppHelper.instance.clearAll();
                         Get.delete<SignInController>();
                         Get.delete<ProfileController>();
                         Get.toNamed(AppRoutes.selectUser);

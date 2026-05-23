@@ -38,8 +38,7 @@ class EnableLocationScreen extends StatelessWidget {
 
     if (permission == LocationPermission.deniedForever) {
       showCustomToast(
-        text:
-            'Location permission permanently denied. Please enable it from settings.',
+        text: 'Location permission permanently denied. Please enable it from settings.',
       );
       return null;
     }
@@ -87,41 +86,27 @@ class EnableLocationScreen extends StatelessWidget {
                       loading: controller.isLoading.value,
                       backgroundColor: AppColors.primary,
                       onTap: () async {
-                        debugPrint('Allow button pressed');
-                        try {
-                          controller.isLoading.value = true;
-                          final position = await _getCurrentLocation();
-                          debugPrint('Position result: $position');
+                        final position = await _getCurrentLocation();
 
-                          if (position != null) {
-                            debugPrint(
-                              'Calling setCurrentLocation in background',
-                            );
-                            controller.setCurrentLocation(
-                              position.latitude,
-                              position.longitude,
-                            );
-                          }
-                        } catch (e) {
-                          debugPrint('Location error in onTap: $e');
-                        } finally {
-                          controller.isLoading.value = false;
+                        if (position != null) {
+                          final success = await controller.setCurrentLocation(
+                            position.latitude,
+                            position.longitude,
+                          );
+                          if (!success) return;
                         }
 
-                        debugPrint('Checking role for navigation...');
                         final role = await AppHelper.instance.getRole();
                         debugPrint('Role from prefs: $role');
 
                         if (role == 'customer') {
-                          debugPrint('Navigating to AddCar');
                           Get.offAllNamed(AppRoutes.addCar);
                         } else if (role == 'mechanic') {
-                          debugPrint('Navigating to MechanicEditProfile');
-                          Get.offAllNamed(AppRoutes.mechanicEditProfile, arguments: {'fromSignup': true});
-                        } else {
-                          debugPrint(
-                            'Role is null or unknown: $role. Falling back to selectUser',
+                          Get.offAllNamed(
+                            AppRoutes.mechanicEditProfile,
+                            arguments: {'fromSignup': true},
                           );
+                        } else {
                           Get.offAllNamed(AppRoutes.selectUser);
                         }
                       },

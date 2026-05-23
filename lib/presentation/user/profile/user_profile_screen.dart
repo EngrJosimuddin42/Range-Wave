@@ -6,9 +6,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:range_wave/core/navigation/app_routes.dart';
 import 'package:range_wave/core/utils/color/app_colors.dart';
 import 'package:range_wave/core/utils/common_widget/primary_button.dart';
-
+import '../../../core/utils/app_helper.dart';
 import '../../../gen/assets.gen.dart';
 import '../../../controller/sign_in_controller.dart';
+import '../../../controller/customer_profile_controller.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
@@ -18,7 +19,20 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<UserProfileScreen> {
+  late final CustomerProfileController controller;
   bool isNotificationOn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.isRegistered<CustomerProfileController>()
+        ? Get.find<CustomerProfileController>()
+        : Get.put(CustomerProfileController());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.loadProfile();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,262 +53,258 @@ class _ProfileScreenState extends State<UserProfileScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w),
-          child: Column(
-            children: <Widget>[
-              // Profile Card
-              Container(
-                padding: EdgeInsets.only(top: 6.h),
-                decoration: BoxDecoration(color: AppColors.surface),
-                child: Row(
-                  children: [
-                    // Avatar
-                    Container(
-                      width: 60.w,
-                      height: 60.h,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.grey[300],
-                        image: const DecorationImage(
-                          image: NetworkImage(
-                            'https://i.pravatar.cc/150?img=52',
-                          ),
-                          fit: BoxFit.cover,
+      body: Obx(() {
+        if (controller.isLoading.value && controller.customerData.isEmpty) {
+          return Center(
+            child: CircularProgressIndicator(color: AppColors.primary),
+          );
+        }
+
+        final name     = controller.customerData['full_name'] ?? '';
+        final email    = controller.customerData['email'] ?? '';
+        final address  = controller.customerData['address'] ?? '';
+        final phone    = controller.customerData['phone'] ?? '';
+        final rating   = controller.customerData['avg_rating']?.toString() ?? '0';
+        final imageUrl = controller.profileImageUrl.value;
+
+        return SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
+            child: Column(
+              children: [
+                // ── Profile Card ──────────────────────────────────
+                Container(
+                  padding: EdgeInsets.only(top: 6.h),
+                  decoration: BoxDecoration(color: AppColors.surface),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Avatar
+                      Container(
+                        width: 60.w,
+                        height: 60.h,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.grey[300],
+                          image: imageUrl.isNotEmpty
+                              ? DecorationImage(
+                            image: NetworkImage(imageUrl),
+                            fit: BoxFit.cover,
+                          )
+                              : null,
                         ),
+                        child: imageUrl.isEmpty
+                            ? Icon(Icons.person, color: Colors.grey)
+                            : null,
                       ),
-                    ),
-                    SizedBox(width: 16.w),
-                    // Info
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                'Randy Orton',
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                              SizedBox(width: 20.w),
-                              Icon(
-                                Icons.star_rounded,
-                                color: Color(0xFFFFA726),
-                                size: 16.w,
-                              ),
-                              SizedBox(width: 2.w),
-                              Text( '5.0',
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'daniel_austin@yourdomain.com',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w500,
-                              fontFamily: GoogleFonts.manrope().fontFamily,
-                              color: AppColors.textPrimary.withValues(
-                                alpha: 0.6,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 2.h),
-                          const Text(
-                            'Badd Link road, Dhaka 1212',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Color(0xFF8A8D9F),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                      SizedBox(width: 16.w),
 
-                    // Edit button
-                    IconButton(
-                      onPressed: () {
-                        Get.toNamed(AppRoutes.userEditProfile);
-                      },
-                      icon: Icon(
-                        Icons.edit_outlined,
-                        size: 24.w,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // Menu Items
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(children: []),
-              ),
-
-              const SizedBox(height: 16),
-
-              Column(
-                children: [
-                  settingsOption(
-                    icon: Assets.icons.notification.path,
-                    label: 'Push Notification',
-                    onTap: () {},
-                    isShowSwitchButton: true,
-                    switchValue: isNotificationOn,
-                    onSwitchChanged: (value) {
-                      setState(() {
-                        isNotificationOn = value;
-                      });
-                    },
-                  ),
-                  SizedBox(height: 20.h),
-                  settingsOption(
-                    icon: Assets.icons.payment.path,
-                    label: 'Payment',
-                    onTap: () {
-                      Get.toNamed(AppRoutes.userPayment);
-                    },
-                    isShowSwitchButton: false,
-                  ),
-                  SizedBox(height: 20.h),
-                  settingsOption(
-                    icon: Assets.icons.car.path,
-                    label: 'Car List',
-                    onTap: () {
-                      Get.toNamed(AppRoutes.carList);
-                    },
-                    isShowSwitchButton: false,
-                  ),
-                  SizedBox(height: 20.h),
-                  settingsOption(
-                    icon: Assets.icons.lock.path,
-                    label: 'Change Password',
-                    onTap: () {
-                      Get.toNamed(AppRoutes.userChangePassword);
-                    },
-                    isShowSwitchButton: false,
-                  ),
-                  SizedBox(height: 20.h),
-                  settingsOption(
-                    icon: Assets.icons.privacy.path,
-                    label: 'Privacy Policy',
-                    onTap: () {
-                      Get.toNamed(AppRoutes.userPrivacy);
-                    },
-                    isShowSwitchButton: false,
-                  ),
-                  SizedBox(height: 20.h),
-                  settingsOption(
-                    icon: Assets.icons.logout.path,
-                    label: 'Log Out',
-                    onTap: () {
-                      showModalBottomSheet(
-                        showDragHandle: true,
-                        context: context,
-                        builder: (context) {
-                          return Container(
-                            height: 250.h,
-                            width: double.infinity,
-                            padding: EdgeInsets.all(16),
-                            child: Column(
+                      // Info
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
                               children: [
+                                Flexible(
+                                  child: Text(
+                                    name,
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 20.w),
+                                Icon(
+                                  Icons.star_rounded,
+                                  color: const Color(0xFFFFA726),
+                                  size: 16.w,
+                                ),
+                                SizedBox(width: 2.w),
                                 Text(
-                                  'Logout',
+                                  rating,
                                   style: TextStyle(
-                                    fontSize: 24.sp,
-                                    color: AppColors.red,
+                                    fontSize: 14.sp,
                                     fontWeight: FontWeight.w700,
-                                    fontFamily:
-                                        GoogleFonts.manrope().fontFamily,
+                                    color: AppColors.textPrimary,
                                   ),
-                                ),
-                                SizedBox(height: 20.h),
-                                Divider(),
-                                SizedBox(height: 20.h),
-                                Text(
-                                  'Are you sure you want to log out?',
-                                  style: TextStyle(
-                                    fontSize: 20.sp,
-                                    color: AppColors.textSecondary.withValues(
-                                      alpha: 0.5,
-                                    ),
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily:
-                                        GoogleFonts.manrope().fontFamily,
-                                  ),
-                                ),
-                                SizedBox(height: 20.h),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: PrimaryButton(
-                                        borderRadius: BorderRadius.circular(
-                                          50.r,
-                                        ),
-                                        text: 'Yes',
-                                        borderColor: AppColors.textPrimary
-                                            .withValues(alpha: 0.5),
-                                        textStyle: TextStyle(
-                                          color: AppColors.textPrimary,
-                                        ),
-                                        onTap: () {
-                                          Get.delete<SignInController>();
-                                          Get.toNamed(AppRoutes.selectUser);
-                                        },
-                                      ),
-                                    ),
-                                    SizedBox(width: 16.w),
-                                    Expanded(
-                                      child: PrimaryButton(
-                                        borderRadius: BorderRadius.circular(
-                                          50.r,
-                                        ),
-                                        text: 'No',
-                                        backgroundColor: AppColors.primary,
-                                        onTap: () {
-                                          Get.back();
-                                        },
-                                      ),
-                                    ),
-                                  ],
                                 ),
                               ],
                             ),
-                          );
+                            SizedBox(height: 4.h),
+                            Text(
+                              email,
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: GoogleFonts.manrope().fontFamily,
+                                color: AppColors.textPrimary.withValues(alpha: 0.6),
+                              ),
+                            ),
+                            SizedBox(height: 2.h),
+                            if (phone.isNotEmpty)
+                              Text(
+                                phone,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xFF8A8D9F),
+                                ),
+                              ),
+                            if (address.isNotEmpty)
+                              Text(
+                                address,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xFF8A8D9F),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+
+                      // Edit button
+                      IconButton(
+                        onPressed: () async {
+                          await Get.toNamed(AppRoutes.userEditProfile);
+                          controller.loadProfile(forceReload: true);
                         },
-                      );
-                    },
-                    isShowSwitchButton: false,
+                        icon: Icon(
+                          Icons.edit_outlined,
+                          size: 24.w,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // ── Settings options ──────────────────────────────
+                Column(
+                  children: [
+                    settingsOption(
+                      icon: Assets.icons.notification.path,
+                      label: 'Push Notification',
+                      onTap: () {},
+                      isShowSwitchButton: true,
+                      switchValue: isNotificationOn,
+                      onSwitchChanged: (value) {
+                        setState(() => isNotificationOn = value);
+                      },
+                    ),
+                    SizedBox(height: 20.h),
+                    settingsOption(
+                      icon: Assets.icons.payment.path,
+                      label: 'Payment',
+                      onTap: () => Get.toNamed(AppRoutes.userPayment),
+                      isShowSwitchButton: false,
+                    ),
+                    SizedBox(height: 20.h),
+                    settingsOption(
+                      icon: Assets.icons.car.path,
+                      label: 'Car List',
+                      onTap: () => Get.toNamed(AppRoutes.carList),
+                      isShowSwitchButton: false,
+                    ),
+                    SizedBox(height: 20.h),
+                    settingsOption(
+                      icon: Assets.icons.lock.path,
+                      label: 'Change Password',
+                      onTap: () => Get.toNamed(AppRoutes.userChangePassword),
+                      isShowSwitchButton: false,
+                    ),
+                    SizedBox(height: 20.h),
+                    settingsOption(
+                      icon: Assets.icons.privacy.path,
+                      label: 'Privacy Policy',
+                      onTap: () => Get.toNamed(AppRoutes.userPrivacy),
+                      isShowSwitchButton: false,
+                    ),
+                    SizedBox(height: 20.h),
+                    settingsOption(
+                      icon: Assets.icons.logout.path,
+                      label: 'Log Out',
+                      onTap: () => _showLogoutSheet(context),
+                      isShowSwitchButton: false,
+                    ),
+                    SizedBox(height: 30.h),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  void _showLogoutSheet(BuildContext context) {
+    showModalBottomSheet(
+      showDragHandle: true,
+      context: context,
+      builder: (context) {
+        return Container(
+          height: 250.h,
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Text(
+                'Logout',
+                style: TextStyle(
+                  fontSize: 24.sp,
+                  color: AppColors.red,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: GoogleFonts.manrope().fontFamily,
+                ),
+              ),
+              SizedBox(height: 20.h),
+              const Divider(),
+              SizedBox(height: 20.h),
+              Text(
+                'Are you sure you want to log out?',
+                style: TextStyle(
+                  fontSize: 20.sp,
+                  color: AppColors.textSecondary.withValues(alpha: 0.5),
+                  fontWeight: FontWeight.w500,
+                  fontFamily: GoogleFonts.manrope().fontFamily,
+                ),
+              ),
+              SizedBox(height: 20.h),
+              Row(
+                children: [
+                  Expanded(
+                    child: PrimaryButton(
+                      borderRadius: BorderRadius.circular(50.r),
+                      text: 'Yes',
+                      borderColor: AppColors.textPrimary.withValues(alpha: 0.5),
+                      textStyle: TextStyle(color: AppColors.textPrimary),
+                      onTap: () async {
+                        await AppHelper.instance.clearAll();
+                        Get.delete<SignInController>();
+                        Get.delete<CustomerProfileController>();
+                        Get.offAllNamed(AppRoutes.selectUser);
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 16.w),
+                  Expanded(
+                    child: PrimaryButton(
+                      borderRadius: BorderRadius.circular(50.r),
+                      text: 'No',
+                      backgroundColor: AppColors.primary,
+                      onTap: () => Get.back(),
+                    ),
                   ),
                 ],
               ),
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -349,12 +359,14 @@ class _ProfileScreenState extends State<UserProfileScreen> {
                   color: switchValue
                       ? AppColors.blue
                       : const Color(0xFF8A8A8A),
-                  width: .5),
+                  width: .5,
+                ),
                 borderRadius: BorderRadius.circular(20.r),
-                color: switchValue
-                    ? AppColors.blue
-                    : Colors.white),
-              alignment: switchValue ? Alignment.centerRight : Alignment.centerLeft,
+                color: switchValue ? AppColors.blue : Colors.white,
+              ),
+              alignment: switchValue
+                  ? Alignment.centerRight
+                  : Alignment.centerLeft,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 width: 16.w,

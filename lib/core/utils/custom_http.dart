@@ -36,7 +36,7 @@ class CustomHttp {
     }
 
     try {
-      final Map<String, String> _headers = {'Content-Type': 'application/json'};
+      final Map<String, String> _headers = {'Content-Type': 'application/json','ngrok-skip-browser-warning': 'true'};
 
       if (needAuth) {
         final authResult = await _attachAuth(_headers);
@@ -84,9 +84,8 @@ class CustomHttp {
     }
   }
 
-  // ─────────────────────────────────────────────
   //  POST / PUT / PATCH / DELETE (convenience)
-  // ─────────────────────────────────────────────
+
   static Future<CustomHttpResult> post({
     required String endpoint,
     Map<String, String>? headers,
@@ -147,9 +146,9 @@ class CustomHttp {
     method: CommonCustomMethods.DELETE,
   );
 
-  // ─────────────────────────────────────────────
+
   //  MULTIPART
-  // ─────────────────────────────────────────────
+
   static Future<CustomHttpResult> multipart({
     required String endpoint,
     required CommonCustomMethods method,
@@ -165,6 +164,7 @@ class CustomHttp {
     final request = http.MultipartRequest(method.name, uri);
     final Map<String, String> _headers = {
       'Authorization': 'Bearer $token',
+      'ngrok-skip-browser-warning': 'true',
       ...?headers,
     };
 
@@ -199,9 +199,9 @@ class CustomHttp {
     }
   }
 
-  // ─────────────────────────────────────────────
+
   //  CORE
-  // ─────────────────────────────────────────────
+
   static Future<CustomHttpResult> _commonRequests({
     required String endpoint,
     Map<String, String>? headers,
@@ -219,7 +219,7 @@ class CustomHttp {
     }
 
     try {
-      final Map<String, String> _headers = {'Content-Type': 'application/json'};
+      final Map<String, String> _headers = {'Content-Type': 'application/json','ngrok-skip-browser-warning': 'true'};
 
       final localStorage = await SharedPreferences.getInstance();
 
@@ -319,9 +319,8 @@ class CustomHttp {
     }
   }
 
-  // ─────────────────────────────────────────────
-  //  AUTH HELPERS
-  // ─────────────────────────────────────────────
+
+  //  AUTH HELPERS─
 
   /// Attaches Authorization + Cookie headers.
   /// Returns false if the token could not be refreshed.
@@ -350,8 +349,7 @@ class CustomHttp {
     return true;
   }
 
-  /// Calls the refresh endpoint and saves the new access token.
-  /// Returns true on success, false on failure (clears storage).
+
   static Future<bool> _refreshToken() async {
     final localStorage = await SharedPreferences.getInstance();
     final refreshToken = await AppHelper.instance.getRefToken();

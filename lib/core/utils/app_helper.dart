@@ -101,6 +101,11 @@ class AppHelper {
     return pref.getString('car_image_id');
   }
 
+  Future<void> clearAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+  }
+
   Future<bool> clearAllPrefValue() async {
     final pref = await SharedPreferences.getInstance();
     try {

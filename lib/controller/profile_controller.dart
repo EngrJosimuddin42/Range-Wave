@@ -2,9 +2,12 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:range_wave/controller/signup_controller.dart';
 import 'package:range_wave/core/utils/custom_toast.dart';
 import 'package:range_wave/core/navigation/app_routes.dart';
 import 'package:range_wave/service/profile_service.dart';
+
+import '../core/app_credentials.dart';
 
 class ProfileController extends GetxController {
   final ProfileService _profileService = ProfileService();
@@ -68,20 +71,14 @@ class ProfileController extends GetxController {
       final rawUrl = data['avatar_url'] ?? '';
       print('RAW AVATAR URL: $rawUrl');
       if (rawUrl.isNotEmpty) {
-        profileImageUrl.value = rawUrl.replaceAll(
-          'http://localhost:8000',
-          'https://rcw2z4rg-8000.inc1.devtunnels.ms',
-        );
+        profileImageUrl.value = AppCredentials.resolveUrl(rawUrl);
       }
 
 
 //  national id image url
       final nationalIdUrl = data['national_id_image_url'] ?? '';
       if (nationalIdUrl.isNotEmpty) {
-        nationalIdImageUrl.value = nationalIdUrl.replaceAll(
-          'http://localhost:8000',
-          'https://rcw2z4rg-8000.inc1.devtunnels.ms',
-        );
+        nationalIdImageUrl.value = AppCredentials.resolveUrl(nationalIdUrl);
       }
 
 // certificate image urls
@@ -90,10 +87,7 @@ class ProfileController extends GetxController {
         certificateImageUrls.assignAll(
           certs.map((c) {
             final url = c['certificate_image_url']?.toString() ?? '';
-            return url.replaceAll(
-              'http://localhost:8000',
-              'https://rcw2z4rg-8000.inc1.devtunnels.ms',
-            );
+            return AppCredentials.resolveUrl(url);
           }).where((url) => url.isNotEmpty).toList(),
         );
       }
@@ -112,6 +106,14 @@ class ProfileController extends GetxController {
   Future<void> saveMechanicProfile() async {
     if (isLoading.value) return;
     isLoading.value = true;
+
+    if (isFromSignup.value && fullNameController.text.trim().isEmpty) {
+      if (Get.isRegistered<SignupController>()) {
+        final signupController = Get.find<SignupController>();
+        fullNameController.text = signupController.nameController.text.trim();
+        debugPrint('====== SIGNUP NAME COPIED: ${fullNameController.text} ======');
+      }
+    }
 
     String? mechanicImageId;
 

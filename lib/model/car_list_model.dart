@@ -36,25 +36,12 @@ class CarListModel {
     brand: json["brand"] ?? "",
     licensePlate: json["license_plate"] ?? "",
     carImageId: json["car_image_id"] ?? "",
-    imageUrl: _resolveImageUrl(json["image_url"] ?? json["car_image"] ?? json["image"]),
+    imageUrl: AppCredentials.resolveUrl(
+      (json["image_url"] ?? json["car_image"] ?? json["image"] ?? '').toString(),
+    ),
     id: json["id"] ?? "",
     updatedAt: DateTime.tryParse(json["updated_at"] ?? "") ?? DateTime.now(),
   );
-
-  static String _resolveImageUrl(dynamic path) {
-    if (path == null || path.toString().isEmpty) return "";
-    String sPath = path.toString();
-    if (sPath.startsWith("http")) return sPath;
-    
-    // Ensure domain doesn't end with slash if path starts with one
-    String domain = AppCredentials.domain;
-    if (domain.endsWith("/") && sPath.startsWith("/")) {
-      return domain + sPath.substring(1);
-    } else if (!domain.endsWith("/") && !sPath.startsWith("/")) {
-      return "$domain/$sPath";
-    }
-    return domain + sPath;
-  }
 
   Map<String, dynamic> toJson() => {
     "year": year,

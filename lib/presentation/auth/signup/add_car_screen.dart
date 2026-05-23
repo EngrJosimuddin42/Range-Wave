@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,7 +9,6 @@ import 'package:range_wave/controller/car_controller.dart';
 import 'package:range_wave/core/utils/color/app_colors.dart';
 import 'package:range_wave/core/utils/common_widget/app_title.dart';
 import 'package:range_wave/core/utils/common_widget/primary_button.dart';
-
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/utils/common_widget/added_car_card.dart';
 import '../../../../core/utils/common_widget/app_top_section.dart';
@@ -18,8 +16,8 @@ import '../../../../core/utils/common_widget/custom_text_field.dart';
 import '../../../../gen/assets.gen.dart';
 import '../../../core/utils/app_helper.dart';
 import '../../../service/car_service.dart';
+import 'package:range_wave/core/utils/custom_toast.dart';
 
-// ── Holds all state for one "Add Car" form entry ──────────────────────────
 class _CarFormEntry {
   final TextEditingController brand = TextEditingController();
   final TextEditingController model = TextEditingController();
@@ -49,9 +47,9 @@ class AddCarScreen extends StatefulWidget {
 }
 
 class _AddCarScreenState extends State<AddCarScreen> {
-  final CarController controller = Get.put(CarController());
-
-  // First form is always visible; more are added on each "Add New Car" click
+  final CarController controller = Get.isRegistered<CarController>()
+      ? Get.find<CarController>()
+      : Get.put(CarController());
   final List<_CarFormEntry> _forms = [_CarFormEntry()];
 
   void _addNewForm() {
@@ -66,7 +64,12 @@ class _AddCarScreenState extends State<AddCarScreen> {
   Future<void> _pickImage(int index) async {
     setState(() => _forms[index].isImageLoading = true);
     final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.gallery);
+    final picked = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 70,
+      maxWidth: 800,
+      maxHeight: 800,
+    );
     setState(() {
       if (picked != null) _forms[index].image = picked;
       _forms[index].isImageLoading = false;
@@ -75,15 +78,26 @@ class _AddCarScreenState extends State<AddCarScreen> {
 
   Future<void> _saveCar(int index) async {
     final form = _forms[index];
+
+    // ── Validation ────────────────────────────────────────────────
+    if (form.brand.text.trim().isEmpty ||
+        form.model.text.trim().isEmpty ||
+        form.year.text.trim().isEmpty ||
+        form.licensePlate.text.trim().isEmpty ||
+        form.tagNumber.text.trim().isEmpty) {
+      showCustomToast(
+        text: 'Please fill all required fields',
+        toastType: ToastTypesInfo(ToastTypes.error),
+      );
+      return;
+    }
+
     setState(() => form.isLoading = true);
 
-    controller.brandNameController.text = form.brand.text;
-    controller.modelNameController.text = form.model.text;
-    controller.codeController.text = form.code.text;
-    controller.yearController.text = form.year.text;
-    controller.licensePlateController.text = form.licensePlate.text;
-    controller.tagNumberController.text = form.tagNumber.text;
+    // ✅ প্রতিটা Save-এ আগের IDs clear করো
+    controller.uploadedImageIds.clear();
 
+    // ── Image upload (যদি থাকে) ───────────────────────────────────
     if (form.image != null) {
       final token = await AppHelper.instance.getAccessToken();
       if (token != null) {
@@ -92,15 +106,33 @@ class _AddCarScreenState extends State<AddCarScreen> {
           token,
         );
         if (resp.success && resp.data != null) {
+          // ✅ image_data_id সঠিকভাবে নেওয়া হচ্ছে
           controller.uploadedImageIds.assignAll([resp.data!]);
+        } else {
+          // Image upload fail হলে থামো
+          setState(() => form.isLoading = false);
+          return;
         }
       }
     }
 
+    // ── Controller-এ values set ───────────────────────────────────
+    controller.brandNameController.text = form.brand.text.trim();
+    controller.modelNameController.text = form.model.text.trim();
+    controller.codeController.text = form.code.text.trim();
+    controller.yearController.text = form.year.text.trim();
+    controller.licensePlateController.text = form.licensePlate.text.trim();
+    controller.tagNumberController.text = form.tagNumber.text.trim();
+
+    // ── API call ──────────────────────────────────────────────────
     final success = await controller.customerAddCar();
 
     if (success == true) {
       _removeForm(index);
+      // সব form শেষ হলে একটা নতুন empty form দেখাও
+      if (_forms.isEmpty) {
+        setState(() => _forms.add(_CarFormEntry()));
+      }
     } else {
       setState(() => form.isLoading = false);
     }
@@ -128,7 +160,7 @@ class _AddCarScreenState extends State<AddCarScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ── My Cars section ───────────────────────────────────
+                    // ── My Cars section ───────────────────────────
                     Obx(() {
                       if (controller.isLoading2.value) {
                         return Padding(
@@ -141,8 +173,9 @@ class _AddCarScreenState extends State<AddCarScreen> {
                           ),
                         );
                       }
-                      if (controller.carList.isEmpty)
+                      if (controller.carList.isEmpty) {
                         return const SizedBox.shrink();
+                      }
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -174,12 +207,14 @@ class _AddCarScreenState extends State<AddCarScreen> {
                       );
                     }),
 
-                    // ── One card per "Add New Car" click ──────────────────
+                    // ── Form cards ────────────────────────────────
                     ...List.generate(_forms.length, (i) {
                       return _CarFormSection(
                         key: ValueKey(i),
                         entry: _forms[i],
                         index: i,
+                        // ✅ শুধু একটাই form থাকলে close button দেখাবে না
+                        canDiscard: _forms.length > 1,
                         onPickImage: () => _pickImage(i),
                         onRemoveImage: () =>
                             setState(() => _forms[i].image = null),
@@ -192,7 +227,7 @@ class _AddCarScreenState extends State<AddCarScreen> {
 
                     SizedBox(height: 16.h),
 
-                    // ── Add New Car button ─────────────────────────────────
+                    // ── Add New Car button ─────────────────────────
                     GestureDetector(
                       onTap: _addNewForm,
                       child: Container(
@@ -221,7 +256,8 @@ class _AddCarScreenState extends State<AddCarScreen> {
                                 color: AppColors.textPrimary,
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: GoogleFonts.manrope().fontFamily,
+                                fontFamily:
+                                GoogleFonts.manrope().fontFamily,
                               ),
                             ),
                           ],
@@ -231,7 +267,7 @@ class _AddCarScreenState extends State<AddCarScreen> {
 
                     SizedBox(height: 24.h),
 
-                    // ── Save & Continue ────────────────────────────────────
+                    // ── Save & Continue ────────────────────────────
                     PrimaryButton(
                       text: 'Save & Continue',
                       backgroundColor: AppColors.primary,
@@ -255,10 +291,11 @@ class _AddCarScreenState extends State<AddCarScreen> {
   }
 }
 
-// ── Single Add Car form card ───────────────────────────────────────────────
+// ── Single form card ───────────────────────────────────────────────────────
 class _CarFormSection extends StatelessWidget {
   final _CarFormEntry entry;
   final int index;
+  final bool canDiscard;
   final VoidCallback onPickImage;
   final VoidCallback onRemoveImage;
   final ValueChanged<int> onPickYear;
@@ -269,6 +306,7 @@ class _CarFormSection extends StatelessWidget {
     super.key,
     required this.entry,
     required this.index,
+    required this.canDiscard,
     required this.onPickImage,
     required this.onRemoveImage,
     required this.onPickYear,
@@ -284,12 +322,14 @@ class _CarFormSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.3),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header row with label + close
+          // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -302,14 +342,16 @@ class _CarFormSection extends StatelessWidget {
                   fontFamily: GoogleFonts.manrope().fontFamily,
                 ),
               ),
-              GestureDetector(
-                onTap: onDiscard,
-                child: Icon(
-                  Icons.close,
-                  size: 20.w,
-                  color: AppColors.textPrimary.withValues(alpha: 0.4),
+              // ✅ একটাই form থাকলে close দেখাবে না
+              if (canDiscard)
+                GestureDetector(
+                  onTap: onDiscard,
+                  child: Icon(
+                    Icons.close,
+                    size: 20.w,
+                    color: AppColors.textPrimary.withValues(alpha: 0.4),
+                  ),
                 ),
-              ),
             ],
           ),
           SizedBox(height: 14.h),
@@ -405,7 +447,7 @@ class _CarFormSection extends StatelessWidget {
   }
 }
 
-// ── Image picker widget (single image per form) ────────────────────────────
+// ── Image picker widget ────────────────────────────────────────────────────
 class _ImagePickerWidget extends StatelessWidget {
   final _CarFormEntry entry;
   final VoidCallback onPickImage;
@@ -419,7 +461,6 @@ class _ImagePickerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // No image selected yet — show dotted upload area
     if (entry.image == null) {
       return DottedBorder(
         options: RectDottedBorderOptions(
@@ -428,7 +469,7 @@ class _ImagePickerWidget extends StatelessWidget {
           dashPattern: [6, 3],
         ),
         child: GestureDetector(
-          onTap: onPickImage,
+          onTap: entry.isImageLoading ? null : onPickImage,
           child: Container(
             width: double.infinity,
             padding: EdgeInsets.symmetric(vertical: 20.h),
@@ -451,9 +492,7 @@ class _ImagePickerWidget extends StatelessWidget {
                   Assets.images.addImage.image(),
                 SizedBox(height: 10.h),
                 Text(
-                  entry.isImageLoading
-                      ? "Uploading photo..."
-                      : "Upload Car Photo",
+                  entry.isImageLoading ? 'Uploading photo...' : 'Upload Car Photo',
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 16.sp,
@@ -463,7 +502,7 @@ class _ImagePickerWidget extends StatelessWidget {
                 ),
                 SizedBox(height: 6.h),
                 Text(
-                  "Tap to add a photo",
+                  'Tap to add a photo',
                   style: TextStyle(
                     color: AppColors.textTernary.withValues(alpha: 0.5),
                     fontSize: 12.sp,
@@ -477,9 +516,8 @@ class _ImagePickerWidget extends StatelessWidget {
       );
     }
 
-    // Image selected — show preview with a remove button and tap-to-change
     return GestureDetector(
-      onTap: onPickImage, // tap to change image
+      onTap: onPickImage,
       child: Stack(
         children: [
           ClipRRect(
@@ -491,7 +529,6 @@ class _ImagePickerWidget extends StatelessWidget {
               fit: BoxFit.cover,
             ),
           ),
-          // "Change" label overlay at the bottom
           Positioned(
             bottom: 0,
             left: 0,
@@ -507,7 +544,7 @@ class _ImagePickerWidget extends StatelessWidget {
               ),
               alignment: Alignment.center,
               child: Text(
-                "Tap to change",
+                'Tap to change',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 12.sp,
@@ -516,7 +553,6 @@ class _ImagePickerWidget extends StatelessWidget {
               ),
             ),
           ),
-          // Remove (✕) button at top-right
           Positioned(
             top: 6.h,
             right: 6.w,

@@ -161,8 +161,7 @@ class ScheduledServiceScreen extends StatelessWidget {
                       controller: TextEditingController(),
                       hintText: 'select location',
                       prefixIcon: Icon(Icons.location_on_outlined),
-                      suffixIcon: Icon(Icons.edit_outlined),
-                    ),
+                      suffixIcon: Icon(Icons.edit_outlined)),
                     SizedBox(height: 12.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -173,8 +172,7 @@ class ScheduledServiceScreen extends StatelessWidget {
                           fit: BoxFit.contain,
                         ),
                         SizedBox(width: 13.w),
-                        Text(
-                          'Use current location',
+                        Text('Use current location',
                           style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w600,

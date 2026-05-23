@@ -10,27 +10,30 @@ class EnableLocationController extends GetxController {
 
   Future<bool> setCurrentLocation(double latitude, double longitude) async {
     isLoading.value = true;
-    print('Okay jvai');
-    final userId = await AppHelper.instance.getUserId();
-    if (userId == null) {
-      isLoading.value = false;
-      return false;
-    }
-    print(userId);
-    final response = await _locationService.currentLocation(
-      latitude,
-      longitude,
-      userId,
-    );
-    if (response.data != null) {
-      isLoading.value = false;
-      return true;
-    } else {
-      isLoading.value = false;
-      if (response.error != null) {
-        showCustomToast(text: response.error!);
+    try {
+      final userId = await AppHelper.instance.getUserId();
+      if (userId == null) {
+        showCustomToast(text: 'User not found. Please sign in again.');
+        return false;
       }
+
+      final response = await _locationService.currentLocation(
+        latitude,
+        longitude,
+        userId,
+      );
+
+      if (response.data != null) {
+        return true;
+      } else {
+        showCustomToast(text: response.error ?? 'Failed to update location');
+        return false;
+      }
+    } catch (e) {
+      showCustomToast(text: 'Something went wrong.');
       return false;
+    } finally {
+      isLoading.value = false;
     }
   }
 }
