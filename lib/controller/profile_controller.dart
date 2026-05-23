@@ -83,13 +83,16 @@ class ProfileController extends GetxController {
 
 // certificate image urls
       final certs = data['certificates'];
-      if (certs != null && certs is List) {
+
+      if (certs != null && certs is List && certs.isNotEmpty) {
         certificateImageUrls.assignAll(
           certs.map((c) {
             final url = c['certificate_image_url']?.toString() ?? '';
             return AppCredentials.resolveUrl(url);
           }).where((url) => url.isNotEmpty).toList(),
         );
+      } else {
+        certificateImageUrls.clear();
       }
 
       final specs = data['specialist'];

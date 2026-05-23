@@ -99,7 +99,7 @@ class ProfileService {
         files.add(await http.MultipartFile.fromPath('national_id_image', nationalIdImage.path));
       }
       for (final cert in certificateImages) {
-        files.add(await http.MultipartFile.fromPath('certificate_images[]', cert.path));
+        files.add(await http.MultipartFile.fromPath('certificate_images', cert.path));
       }
       if (files.isEmpty) return ApiResponse.success(true);
 
