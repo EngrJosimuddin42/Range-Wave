@@ -90,8 +90,7 @@ class _MechanicHomeScreenState extends State<MechanicHomeScreen> {
                 }
                 if (serviceRequestController.serviceRequests.isEmpty) {
                   return Center(
-                    child: Text(
-                      'No incoming job requests yet!',
+                    child: Text( 'No incoming job requests yet!',
                       style: TextStyle(
                         color: AppColors.red,
                         fontSize: 16.sp,
@@ -309,12 +308,11 @@ class IncomingJobCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      width: 300.w,
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(12.r),
-      ),
+        borderRadius: BorderRadius.circular(12.r)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -335,8 +333,7 @@ class IncomingJobCard extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 4.h),
-              Text(
-                '40 sec',
+              Text('40 sec',
                 style: TextStyle(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w500,
@@ -353,8 +350,8 @@ class IncomingJobCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  serviceRequest.issueSummary,
+
+                Text( serviceRequest.issueSummary,
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
@@ -362,6 +359,7 @@ class IncomingJobCard extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 4.h),
+
                 Text(
                   '${serviceRequest.carBrand} ${serviceRequest.carModel}',
                   style: TextStyle(
@@ -377,12 +375,22 @@ class IncomingJobCard extends StatelessWidget {
                   runSpacing: 8.h,
                   children: [
                     ChipsButtonInfo(
-                      title: 'Urgent',
+                      title: serviceRequest.severityLevel,
                       colorBg: AppColors.red.withValues(alpha: 0.2),
                       textColor: AppColors.red.withValues(alpha: 0.6),
                     ),
-                    ChipsButtonInfo(title: '12 miles'),
-                    ChipsButtonInfo(title: 'E.A. \$1250'),
+
+                    //  distance dynamic — null হলে দেখাবে না
+                    if (serviceRequest.distance != null)
+                      ChipsButtonInfo(
+                        title: '${serviceRequest.distance} miles',
+                      ),
+
+                    //  estimatedAmount dynamic — null হলে দেখাবে না
+                    if (serviceRequest.estimatedAmount != null)
+                      ChipsButtonInfo(
+                        title: 'E.A. \$${serviceRequest.estimatedAmount}',
+                      ),
                   ],
                 ),
 

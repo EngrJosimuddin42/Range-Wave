@@ -5,7 +5,6 @@ import '../service/service_request_service.dart';
 class MechanicHistoryController extends GetxController {
   final ServiceRequestService _service = ServiceRequestService();
 
-  // চিপসের লিস্ট
   RxList<String> chips = <String>[
     'All',
     'Upcoming',
@@ -15,30 +14,38 @@ class MechanicHistoryController extends GetxController {
 
   RxInt selectedChipIndex = 0.obs;
 
+  // ✅ UserHistoryController এর মতো statusMap
+  final Map<int, String> statusMap = {
+    0: '',            // All
+    1: 'upcoming',
+    2: 'completed',
+    3: 'running',
+  };
+
   RxList<ServiceRequestModel> mechanicHistoryList = <ServiceRequestModel>[].obs;
   RxBool isLoading = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    print('===== MechanicHistoryController onInit =====');
-    fetchMechanicHistory(chips[selectedChipIndex.value]);
+    fetchMechanicHistory();
+
+    // ✅ Chip change হলে auto filter
+    ever(selectedChipIndex, (_) => fetchMechanicHistory());
   }
 
-
-  void changeChipIndex(int index) {
-    selectedChipIndex.value = index;
-    fetchMechanicHistory(chips[index]);
+  // ✅ resetToDefault যোগ
+  void resetToDefault() {
+    selectedChipIndex.value = 0;
   }
 
-  Future<void> fetchMechanicHistory(String status) async {
+  Future<void> fetchMechanicHistory() async {
     try {
       isLoading.value = true;
-      final String apiStatus = status == 'All' ? '' : status.toLowerCase();
-      final result = await _service.getServiceRequests(apiStatus);
 
-      print('HISTORY API: success=${result.success}, error=${result.error}, data=${result.data}');
-
+      // ✅ statusMap থেকে status নিচ্ছে
+      final String status = statusMap[selectedChipIndex.value] ?? '';
+      final result = await _service.getServiceRequests(status);
 
       if (result.success && result.data != null) {
         mechanicHistoryList.value = result.data!;

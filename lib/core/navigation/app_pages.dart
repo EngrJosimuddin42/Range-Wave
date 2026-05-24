@@ -20,7 +20,7 @@ import 'package:range_wave/presentation/user/home/user_home_screen.dart';
 import 'package:range_wave/presentation/user/payment/payment_successful_screen.dart';
 import 'package:range_wave/presentation/user/profile/car_list_screen.dart';
 import 'package:range_wave/presentation/user/profile/credit_card_screen.dart';
-import 'package:range_wave/presentation/user/profile/set_time_screen.dart';
+import 'package:range_wave/presentation/mechanic/profile/set_time_screen.dart';
 import 'package:range_wave/presentation/user/profile/user_change_password_screen.dart';
 import 'package:range_wave/presentation/user/profile/user_edit_profile.dart';
 import 'package:range_wave/presentation/user/profile/user_payment_screen.dart';
@@ -40,7 +40,6 @@ import '../../presentation/mechanic/profile/mechanic_credit_card_screen.dart';
 import '../../presentation/mechanic/profile/mechanic_edit_profile.dart';
 import '../../presentation/mechanic/profile/mechanic_payment_screen.dart';
 import '../../presentation/mechanic/profile/mechanic_profile_screen.dart';
-import '../../presentation/user/home/see_all_service_history_screen.dart';
 import '../../presentation/user/home/service_in_progress.dart';
 import 'package:get/get.dart';
 
@@ -56,7 +55,6 @@ class AppPages {
     GetPage(name: AppRoutes.userHome, page: () => UserHomeScreen()),
     GetPage(name: AppRoutes.enableLocation, page: () => EnableLocationScreen()),
     GetPage(name: AppRoutes.addCar, page: () => AddCarScreen()),
-    GetPage(name: AppRoutes.seeAllServiceHistory, page: () => SeeAllServiceHistoryScreen()),
     GetPage(name: AppRoutes.userProfile, page: () => UserProfileScreen()),
     GetPage(name: AppRoutes.userEditProfile, page: () => UserEditProfile()),
     GetPage(name: AppRoutes.userPayment, page: () => UserPaymentScreen()),

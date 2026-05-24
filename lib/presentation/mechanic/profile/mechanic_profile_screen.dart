@@ -8,6 +8,7 @@ import 'package:range_wave/core/utils/color/app_colors.dart';
 import 'package:range_wave/core/utils/common_widget/chips_button.dart';
 import 'package:range_wave/core/utils/common_widget/primary_button.dart';
 import 'package:range_wave/controller/sign_in_controller.dart';
+import '../../../controller/payment_controller.dart';
 import '../../../controller/profile_controller.dart';
 import '../../../core/utils/app_helper.dart';
 import '../../../gen/assets.gen.dart';
@@ -314,6 +315,9 @@ class _ProfileScreenState extends State<MechanicProfileScreen> {
                       textStyle: TextStyle(color: AppColors.textPrimary),
                       onTap: () async {
                         await AppHelper.instance.clearAll();
+                        if (Get.isRegistered<PaymentController>()) {
+                          await Get.find<PaymentController>().clearCards();
+                        }
                         Get.delete<SignInController>();
                         Get.delete<ProfileController>();
                         Get.toNamed(AppRoutes.selectUser);

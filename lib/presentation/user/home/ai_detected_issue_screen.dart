@@ -33,8 +33,7 @@ class AiDetectedIssueScreen extends StatelessWidget {
                         icon: Icon(Icons.arrow_back),
                       ),
                       SizedBox(width: 8.w),
-                      Text(
-                        'Scheduled a Service',
+                      Text('Scheduled a Service',
                         style: TextStyle(
                           fontSize: 20.sp,
                           fontWeight: FontWeight.w500,

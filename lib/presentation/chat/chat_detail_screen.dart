@@ -105,25 +105,13 @@ class _UserChatDetailsScreenState extends State<ChatDetailScreen> {
                   onTap: () {
                     print('send');
                   },
-                  child: Container(
-                    margin: EdgeInsets.only(right: 10.w),
-                    width: 18.w,
-                    height: 18.w,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.textPrimary,
-                    ),
-                    child: Center(
-                      child: SizedBox(
-                        width: 16.w,
-                        height: 16.w,
-                        child: Assets.icons.send.svg(
-                          fit: BoxFit.contain,
-                          colorFilter: const ColorFilter.mode(
-                            Colors.white,
-                            BlendMode.srcIn,
-                          ),
-                        ),
+                  child: Padding(
+                    padding: EdgeInsets.all(12.w),
+                    child: Assets.icons.send.svg(
+                      fit: BoxFit.contain,
+                      colorFilter: ColorFilter.mode(
+                        AppColors.textPrimary,
+                        BlendMode.srcIn,
                       ),
                     ),
                   ),

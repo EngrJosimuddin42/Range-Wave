@@ -14,6 +14,14 @@ class UserHistoryController extends GetxController {
 
   RxInt selectedChipIndex = 0.obs;
 
+  // Chip index → API status string mapping
+  final Map<int, String> statusMap = {
+    0: '',            // All
+    1: 'upcoming',
+    2: 'completed',
+    3: 'running',
+  };
+
   RxList<ServiceRequestModel> serviceHistoryList = <ServiceRequestModel>[].obs;
   RxBool isLoading = false.obs;
 
@@ -21,12 +29,22 @@ class UserHistoryController extends GetxController {
   void onInit() {
     super.onInit();
     fetchHistoryData();
+
+    //  Chip change হলে auto filter
+    ever(selectedChipIndex, (_) => fetchHistoryData());
+  }
+
+  void resetToDefault() {
+    selectedChipIndex.value = 0;
   }
 
   Future<void> fetchHistoryData() async {
     try {
       isLoading.value = true;
-      final result = await _service.getUserServiceHistory();
+
+      //  Selected chip অনুযায়ী status পাঠাচ্ছে
+      final String status = statusMap[selectedChipIndex.value] ?? '';
+      final result = await _service.getUserServiceHistory(status: status);
 
       if (result.success && result.data != null) {
         serviceHistoryList.value = result.data!;

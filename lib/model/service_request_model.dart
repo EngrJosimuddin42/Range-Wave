@@ -12,6 +12,8 @@ class ServiceRequestModel {
   final String severityLevel;
   final DateTime serviceDate;
   final String serviceTime;
+  final String? distance;
+  final String? estimatedAmount;
 
   ServiceRequestModel({
     required this.bookingId,
@@ -27,6 +29,8 @@ class ServiceRequestModel {
     required this.severityLevel,
     required this.serviceDate,
     required this.serviceTime,
+    this.distance,
+    this.estimatedAmount,
   });
 
   factory ServiceRequestModel.fromJson(Map<String, dynamic> json) =>
@@ -44,6 +48,8 @@ class ServiceRequestModel {
         severityLevel: json["severity_level"],
         serviceDate: DateTime.parse(json["service_date"]),
         serviceTime: json["service_time"],
+        distance: json["distance"]?.toString(),
+        estimatedAmount: json["estimated_amount"]?.toString(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -59,7 +65,9 @@ class ServiceRequestModel {
     "issue_detail": issueDetail,
     "severity_level": severityLevel,
     "service_date":
-        "${serviceDate.year.toString().padLeft(4, '0')}-${serviceDate.month.toString().padLeft(2, '0')}-${serviceDate.day.toString().padLeft(2, '0')}",
+    "${serviceDate.year.toString().padLeft(4, '0')}-${serviceDate.month.toString().padLeft(2, '0')}-${serviceDate.day.toString().padLeft(2, '0')}",
     "service_time": serviceTime,
+    "distance": distance,
+    "estimated_amount": estimatedAmount,
   };
 }

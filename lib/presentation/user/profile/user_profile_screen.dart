@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:range_wave/core/navigation/app_routes.dart';
 import 'package:range_wave/core/utils/color/app_colors.dart';
 import 'package:range_wave/core/utils/common_widget/primary_button.dart';
+import '../../../controller/payment_controller.dart';
 import '../../../core/utils/app_helper.dart';
 import '../../../gen/assets.gen.dart';
 import '../../../controller/sign_in_controller.dart';
@@ -284,6 +285,9 @@ class _ProfileScreenState extends State<UserProfileScreen> {
                       textStyle: TextStyle(color: AppColors.textPrimary),
                       onTap: () async {
                         await AppHelper.instance.clearAll();
+                        if (Get.isRegistered<PaymentController>()) {
+                          await Get.find<PaymentController>().clearCards();
+                        }
                         Get.delete<SignInController>();
                         Get.delete<CustomerProfileController>();
                         Get.offAllNamed(AppRoutes.selectUser);

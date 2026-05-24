@@ -127,19 +127,24 @@ class UserHomeScreen extends StatelessWidget {
                             padding: EdgeInsets.symmetric(vertical: 20.h),
                             child: Text(
                               "No service history found.",
-                              style: TextStyle(fontSize: 14.sp, color: AppColors.textTernary),
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: AppColors.textTernary,
+                              ),
                             ),
                           ),
                         );
                       }
 
+                      //  Home screen এ শুধু প্রথম ৩টা দেখাবে
+                      final displayList = userHistoryController.serviceHistoryList.take(3).toList();
+
                       return ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: userHistoryController.serviceHistoryList.length,
+                        itemCount: displayList.length,
                         itemBuilder: (context, index) {
-                          final historyData = userHistoryController.serviceHistoryList[index];
-
+                          final historyData = displayList[index];
                           return ServiceHistoryCard(
                             onTap: () {
                               Get.toNamed(AppRoutes.serviceInProgress);
@@ -150,17 +155,15 @@ class UserHomeScreen extends StatelessWidget {
                       );
                     }),
 
+
                     SizedBox(height: 50.h),
 
                     PrimaryButton(
                       text: 'Schedule a Service',
-                      borderColor: AppColors.textSecondary.withValues(
-                        alpha: 0.2,
-                      ),
+                      borderColor: AppColors.textSecondary.withValues( alpha: 0.2),
                       textStyle: TextStyle(
                         fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
+                        fontWeight: FontWeight.w500),
                       onTap: () {
                         Get.toNamed(AppRoutes.userScheduleService);
                       },
