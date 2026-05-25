@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:range_wave/gen/assets.gen.dart';
+import 'package:range_wave/model/car_issue_model.dart';
 import '../../../core/navigation/app_routes.dart';
 import '../../../core/utils/color/app_colors.dart';
 import '../../../core/utils/common_widget/app_top_section.dart';
@@ -13,6 +14,9 @@ class AiDetectedIssueScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final CarIssueModel data = Get.arguments as CarIssueModel;
+
     return Scaffold(
       backgroundColor: AppColors.surface,
       body: SafeArea(
@@ -26,11 +30,13 @@ class AiDetectedIssueScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+
+                  // ── Top bar ──────────────────────────────────
                   Row(
                     children: [
                       IconButton(
                         onPressed: () => Get.back(),
-                        icon: Icon(Icons.arrow_back),
+                        icon: const Icon(Icons.arrow_back),
                       ),
                       SizedBox(width: 8.w),
                       Text('Scheduled a Service',
@@ -43,7 +49,10 @@ class AiDetectedIssueScreen extends StatelessWidget {
                       ),
                     ],
                   ),
+
                   SizedBox(height: 20.h),
+
+                  // ── AI Summary card ──────────────────────────
                   Container(
                     padding: EdgeInsets.all(12.w),
                     width: double.infinity,
@@ -53,7 +62,7 @@ class AiDetectedIssueScreen extends StatelessWidget {
                       boxShadow: [
                         BoxShadow(
                           blurRadius: 4.r,
-                          offset: Offset(0, 4),
+                          offset: const Offset(0, 4),
                           color: AppColors.shadow.withValues(alpha: 0.1),
                         ),
                       ],
@@ -61,62 +70,104 @@ class AiDetectedIssueScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+
+                        // ── Header: title + issue badge ──────
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('AI Summery'),
-                            Container(
-                              margin: EdgeInsets.symmetric(vertical: 4.h),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 12.w,
-                                vertical: 8.h,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12.r),
-                                color: Color(0xFFD3F4DE),
-                                boxShadow: [
-                                  BoxShadow(
-                                    blurRadius: 4,
-                                    offset: Offset(0, 2),
-                                    color: AppColors.textPrimary.withValues(
-                                      alpha: 0.15,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              child: Text(
-                                'Break Issue',
-                                style: TextStyle(
-                                  color: AppColors.green,
-                                  fontSize: 16.sp,
-                                  fontFamily: GoogleFonts.manrope().fontFamily,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                            Text('AI Summary',
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textPrimary,
+                                fontFamily: GoogleFonts.manrope().fontFamily,
                               ),
                             ),
+
+                            //  Dynamic issue badge
+                            if (data.issue.isNotEmpty &&
+                                data.issue.toLowerCase() != 'none')
+                              Container(
+                                margin: EdgeInsets.symmetric(vertical: 4.h),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12.w,
+                                  vertical: 8.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  color: _issueBgColor(data.severityLevel),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                      color: AppColors.textPrimary
+                                          .withValues(alpha: 0.15),
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  data.issue,
+                                  style: TextStyle(
+                                    color: _issueTextColor(data.severityLevel),
+                                    fontSize: 14.sp,
+                                    fontFamily:
+                                    GoogleFonts.manrope().fontFamily,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              )
+                            else
+                            // issue না থাকলে "No Issue" badge
+                              Container(
+                                margin: EdgeInsets.symmetric(vertical: 4.h),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12.w,
+                                  vertical: 8.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  color: const Color(0xFFD3F4DE),
+                                ),
+                                child: Text( 'No Issue',
+                                  style: TextStyle(
+                                    color: AppColors.green,
+                                    fontSize: 14.sp,
+                                    fontFamily:
+                                    GoogleFonts.manrope().fontFamily,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
+
                         SizedBox(height: 12.h),
-                        _circleSection(),
+
+                        //  Dynamic confidence circle
+                        _CircleSection(confidence: data.confidenceLevel),
+
                         SizedBox(height: 12.h),
+
+                        //  Dynamic severity level
                         InfoStatus(
                           title: 'Severity Level',
-                          value: 'Serious',
-                          dotColor: Colors.red,
+                          value: data.severityLevel.isEmpty ||
+                              data.severityLevel.toLowerCase() == 'none'
+                              ? 'N/A'
+                              : data.severityLevel,
+                          dotColor: _severityColor(data.severityLevel),
                         ),
-                        // SizedBox(height: 8.h),
-                        // Divider(),
-                        // SizedBox(height: 8.h),
-                        // InfoStatus(
-                        //   title: 'Estimate Amount',
-                        //   value: '\$1250',
-                        //   dotColor: Colors.green,
-                        // ),
+
                         SizedBox(height: 8.h),
-                        Divider(),
+                        const Divider(),
                         SizedBox(height: 8.h),
+
+                        //  Dynamic summary text
                         Text(
-                          'Quick Suggestion: Avoid diving long distances. Professional inspection is highly recommended.',
+                          data.summary.isEmpty ||
+                              data.summary == 'response.output_text'
+                              ? 'No summary available.'
+                              : data.summary,
                           style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w400,
@@ -130,11 +181,15 @@ class AiDetectedIssueScreen extends StatelessWidget {
                   ),
 
                   SizedBox(height: 50.h),
+
                   PrimaryButton(
-                    text: 'View Recommended Mechanics ',
+                    text: 'View Recommended Mechanics',
                     backgroundColor: AppColors.primary,
                     onTap: () {
-                      Get.toNamed(AppRoutes.recommendedMatches);
+                      Get.toNamed(
+                        AppRoutes.recommendedMatches,
+                        arguments: data,
+                      );
                     },
                   ),
                 ],
@@ -145,47 +200,105 @@ class AiDetectedIssueScreen extends StatelessWidget {
       ),
     );
   }
+
+  // ── Color helpers ────────────────────────────────────────
+
+  Color _severityColor(String level) {
+    switch (level.toLowerCase()) {
+      case 'serious':
+      case 'critical':
+        return Colors.red;
+      case 'moderate':
+      case 'medium':
+        return Colors.orange;
+      case 'minor':
+      case 'low':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  Color _issueBgColor(String level) {
+    switch (level.toLowerCase()) {
+      case 'serious':
+      case 'critical':
+        return const Color(0xFFFFE5E5);
+      case 'moderate':
+      case 'medium':
+        return const Color(0xFFFFF3E0);
+      default:
+        return const Color(0xFFD3F4DE);
+    }
+  }
+
+  Color _issueTextColor(String level) {
+    switch (level.toLowerCase()) {
+      case 'serious':
+      case 'critical':
+        return Colors.red;
+      case 'moderate':
+      case 'medium':
+        return Colors.orange;
+      default:
+        return AppColors.green;
+    }
+  }
 }
 
-Widget _circleSection() {
-  return Center(
-    child: Stack(
-      children: [
-        Assets.images.stylishCircle.image(
-          width: 110.w,
-          height: 110.w,
-          fit: BoxFit.contain,
-        ),
-        Positioned(
-          top: 35.h,
-          left: 45.w,
-          child: Text(
-            '70%',
-            style: TextStyle(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w700,
-              color: AppColors.blue,
+// ════════════════════════════════════════════════════════════
+//  Confidence circle — dynamic
+// ════════════════════════════════════════════════════════════
+class _CircleSection extends StatelessWidget {
+  final int confidence;
+  const _CircleSection({required this.confidence});
+
+  @override
+  Widget build(BuildContext context) {
+    final String label = '$confidence%';
+    final double leftOffset = label.length <= 3 ? 45.w : 38.w;
+
+    return Center(
+      child: Stack(
+        children: [
+          Assets.images.stylishCircle.image(
+            width: 110.w,
+            height: 110.w,
+            fit: BoxFit.contain),
+          Positioned(
+            top: 35.h,
+            left: leftOffset,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w700,
+                color: AppColors.blue,
+              ),
             ),
           ),
-        ),
-        Positioned(
-          top: 60.h,
-          left: 25.w,
-          child: Text(
-            'Confidence',
-            style: TextStyle(
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w400,
-              color: AppColors.textPrimary,
-              fontFamily: GoogleFonts.manrope().fontFamily,
+          Positioned(
+            top: 60.h,
+            left: 25.w,
+            child: Text(
+              'Confidence',
+              style: TextStyle(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w400,
+                color: AppColors.textPrimary,
+                fontFamily: GoogleFonts.manrope().fontFamily,
+              ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }
 
+// ════════════════════════════════════════════════════════════
+//  InfoStatus row
+// ════════════════════════════════════════════════════════════
 class InfoStatus extends StatelessWidget {
   final String title;
   final String value;

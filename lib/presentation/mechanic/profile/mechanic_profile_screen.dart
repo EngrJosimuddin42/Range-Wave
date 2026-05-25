@@ -179,10 +179,13 @@ class _ProfileScreenState extends State<MechanicProfileScreen> {
                         onPressed: () {
                           Get.toNamed(AppRoutes.mechanicEditProfile);
                         },
-                        icon: Icon(
-                          Icons.edit_outlined,
-                          size: 24.w,
-                          color: AppColors.primary,
+                        icon: Assets.icons.edit1.svg(
+                          width: 24.w,
+                          height: 24.w,
+                          colorFilter: ColorFilter.mode(
+                            AppColors.primary,
+                            BlendMode.srcIn,
+                          ),
                         ),
                       ),
                     ],

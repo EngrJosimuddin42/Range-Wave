@@ -1,14 +1,3 @@
-// dart format width=80
-
-/// GENERATED CODE - DO NOT MODIFY BY HAND
-/// *****************************************************
-///  FlutterGen
-/// *****************************************************
-
-// coverage:ignore-file
-// ignore_for_file: type=lint
-// ignore_for_file: deprecated_member_use,directives_ordering,implicit_dynamic_list_literal,unnecessary_import
-
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart' as _svg;
@@ -18,8 +7,7 @@ class $AssetsIconsGen {
   const $AssetsIconsGen();
 
   /// File path: assets/icons/add_icon_black.svg
-  SvgGenImage get addIconBlack =>
-      const SvgGenImage('assets/icons/add_icon_black.svg');
+  SvgGenImage get addIconBlack => const SvgGenImage('assets/icons/add_icon_black.svg');
 
   /// File path: assets/icons/back.svg
   SvgGenImage get back => const SvgGenImage('assets/icons/back.svg');
@@ -31,8 +19,7 @@ class $AssetsIconsGen {
   SvgGenImage get car => const SvgGenImage('assets/icons/car.svg');
 
   /// File path: assets/icons/certificate.svg
-  SvgGenImage get certificate =>
-      const SvgGenImage('assets/icons/certificate.svg');
+  SvgGenImage get certificate =>  const SvgGenImage('assets/icons/certificate.svg');
 
   /// File path: assets/icons/certified.svg
   SvgGenImage get certified => const SvgGenImage('assets/icons/certified.svg');
@@ -44,8 +31,7 @@ class $AssetsIconsGen {
   SvgGenImage get clock => const SvgGenImage('assets/icons/clock.svg');
 
   /// File path: assets/icons/clock_filled.svg
-  SvgGenImage get clockFilled =>
-      const SvgGenImage('assets/icons/clock_filled.svg');
+  SvgGenImage get clockFilled => const SvgGenImage('assets/icons/clock_filled.svg');
 
   /// File path: assets/icons/delivery.svg
   SvgGenImage get delivery => const SvgGenImage('assets/icons/delivery.svg');
@@ -60,11 +46,13 @@ class $AssetsIconsGen {
   SvgGenImage get home => const SvgGenImage('assets/icons/home.svg');
 
   /// File path: assets/icons/home_filled.svg
-  SvgGenImage get homeFilled =>
-      const SvgGenImage('assets/icons/home_filled.svg');
+  SvgGenImage get homeFilled => const SvgGenImage('assets/icons/home_filled.svg');
 
   /// File path: assets/icons/location.svg
   SvgGenImage get location => const SvgGenImage('assets/icons/location.svg');
+
+  /// File path: assets/icons/location1.svg
+  SvgGenImage get location1 => const SvgGenImage('assets/icons/location1.svg');
 
   /// File path: assets/icons/lock.svg
   SvgGenImage get lock => const SvgGenImage('assets/icons/lock.svg');
@@ -73,12 +61,10 @@ class $AssetsIconsGen {
   SvgGenImage get logout => const SvgGenImage('assets/icons/logout.svg');
 
   /// File path: assets/icons/money_notes.svg
-  SvgGenImage get moneyNotes =>
-      const SvgGenImage('assets/icons/money_notes.svg');
+  SvgGenImage get moneyNotes => const SvgGenImage('assets/icons/money_notes.svg');
 
   /// File path: assets/icons/notification.svg
-  SvgGenImage get notification =>
-      const SvgGenImage('assets/icons/notification.svg');
+  SvgGenImage get notification => const SvgGenImage('assets/icons/notification.svg');
 
   /// File path: assets/icons/payment.svg
   SvgGenImage get payment => const SvgGenImage('assets/icons/payment.svg');
@@ -96,12 +82,10 @@ class $AssetsIconsGen {
   SvgGenImage get profile_edit => const SvgGenImage('assets/icons/profile_edit.svg');
 
   /// File path: assets/icons/profile_filled.svg
-  SvgGenImage get profileFilled =>
-      const SvgGenImage('assets/icons/profile_filled.svg');
+  SvgGenImage get profileFilled => const SvgGenImage('assets/icons/profile_filled.svg');
 
   /// File path: assets/icons/rating_filled.svg
-  SvgGenImage get ratingFilled =>
-      const SvgGenImage('assets/icons/rating_filled.svg');
+  SvgGenImage get ratingFilled => const SvgGenImage('assets/icons/rating_filled.svg');
 
   /// File path: assets/icons/send.svg
   SvgGenImage get send => const SvgGenImage('assets/icons/send.svg');
@@ -109,35 +93,17 @@ class $AssetsIconsGen {
   /// File path: assets/icons/stripe_pay.svg
   SvgGenImage get stripePay => const SvgGenImage('assets/icons/stripe_pay.svg');
 
+  /// File path: assets/icons/edit.svg
+  SvgGenImage get edit => const SvgGenImage('assets/icons/edit.svg');
+
+  /// File path: assets/icons/edit1.svg
+  SvgGenImage get edit1 => const SvgGenImage('assets/icons/edit1.svg');
+
   /// List of all assets
   List<SvgGenImage> get values => [
-    addIconBlack,
-    back,
-    cancel,
-    car,
-    certificate,
-    certified,
-    chat,
-    clock,
-    clockFilled,
-    delivery,
-    dollar,
-    google,
-    home,
-    homeFilled,
-    location,
-    lock,
-    logout,
-    moneyNotes,
-    notification,
-    payment,
-    paypalPay,
-    privacy,
-    profile,
-    profileFilled,
-    ratingFilled,
-    send,
-    stripePay,
+    addIconBlack, back, cancel, car, certificate, certified, chat, clock, clockFilled, delivery,
+    dollar, google, home, homeFilled, location,location1, lock, logout, moneyNotes, notification, payment,
+    paypalPay, privacy, profile, profileFilled, ratingFilled, send, stripePay, edit,edit1,
   ];
 }
 
@@ -145,24 +111,19 @@ class $AssetsImagesGen {
   const $AssetsImagesGen();
 
   /// File path: assets/images/add_image.png
-  AssetGenImage get addImage =>
-      const AssetGenImage('assets/images/add_image.png');
+  AssetGenImage get addImage => const AssetGenImage('assets/images/add_image.png');
 
   /// File path: assets/images/app_logo.png
-  AssetGenImage get appLogo =>
-      const AssetGenImage('assets/images/app_logo.png');
+  AssetGenImage get appLogo => const AssetGenImage('assets/images/app_logo.png');
 
   /// File path: assets/images/app_logo_title.png
-  AssetGenImage get appLogoTitle =>
-      const AssetGenImage('assets/images/app_logo_title.png');
+  AssetGenImage get appLogoTitle => const AssetGenImage('assets/images/app_logo_title.png');
 
   /// File path: assets/images/apple_pay.png
-  AssetGenImage get applePay =>
-      const AssetGenImage('assets/images/apple_pay.png');
+  AssetGenImage get applePay => const AssetGenImage('assets/images/apple_pay.png');
 
   /// File path: assets/images/banner_img.png
-  AssetGenImage get bannerImg =>
-      const AssetGenImage('assets/images/banner_img.png');
+  AssetGenImage get bannerImg => const AssetGenImage('assets/images/banner_img.png');
 
   /// File path: assets/images/car1.png
   AssetGenImage get car1 => const AssetGenImage('assets/images/car1.png');
@@ -174,67 +135,42 @@ class $AssetsImagesGen {
   AssetGenImage get car3 => const AssetGenImage('assets/images/car3.png');
 
   /// File path: assets/images/congrats.png
-  AssetGenImage get congrats =>
-      const AssetGenImage('assets/images/congrats.png');
+  AssetGenImage get congrats => const AssetGenImage('assets/images/congrats.png');
 
   /// File path: assets/images/cover_mechanic.png
-  AssetGenImage get coverMechanic =>
-      const AssetGenImage('assets/images/cover_mechanic.png');
+  AssetGenImage get coverMechanic => const AssetGenImage('assets/images/cover_mechanic.png');
 
   /// File path: assets/images/logo_title.png
-  AssetGenImage get logoTitle =>
-      const AssetGenImage('assets/images/logo_title.png');
+  AssetGenImage get logoTitle => const AssetGenImage('assets/images/logo_title.png');
 
   /// File path: assets/images/map.png
   AssetGenImage get map => const AssetGenImage('assets/images/map.png');
 
   /// File path: assets/images/map_example.png
-  AssetGenImage get mapExample =>
-      const AssetGenImage('assets/images/map_example.png');
+  AssetGenImage get mapExample => const AssetGenImage('assets/images/map_example.png');
 
   /// File path: assets/images/payment_card.png
-  AssetGenImage get paymentCard =>
-      const AssetGenImage('assets/images/payment_card.png');
+  AssetGenImage get paymentCard => const AssetGenImage('assets/images/payment_card.png');
 
   /// File path: assets/images/payment_success.png
-  AssetGenImage get paymentSuccess =>
-      const AssetGenImage('assets/images/payment_success.png');
+  AssetGenImage get paymentSuccess => const AssetGenImage('assets/images/payment_success.png');
 
   /// File path: assets/images/repair_man.png
-  AssetGenImage get repairMan =>
-      const AssetGenImage('assets/images/repair_man.png');
+  AssetGenImage get repairMan => const AssetGenImage('assets/images/repair_man.png');
 
   /// File path: assets/images/stripe.png
   AssetGenImage get stripe => const AssetGenImage('assets/images/stripe.png');
 
   /// File path: assets/images/stylish_circle.png
-  AssetGenImage get stylishCircle =>
-      const AssetGenImage('assets/images/stylish_circle.png');
+  AssetGenImage get stylishCircle => const AssetGenImage('assets/images/stylish_circle.png');
 
   /// File path: assets/images/user.jpg
   AssetGenImage get user => const AssetGenImage('assets/images/user.jpg');
 
   /// List of all assets
   List<AssetGenImage> get values => [
-    addImage,
-    appLogo,
-    appLogoTitle,
-    applePay,
-    bannerImg,
-    car1,
-    car2,
-    car3,
-    congrats,
-    coverMechanic,
-    logoTitle,
-    map,
-    mapExample,
-    paymentCard,
-    paymentSuccess,
-    repairMan,
-    stripe,
-    stylishCircle,
-    user,
+    addImage, appLogo, appLogoTitle, applePay, bannerImg, car1, car2, car3, congrats, coverMechanic,
+    logoTitle, map, mapExample, paymentCard, paymentSuccess, repairMan, stripe, stylishCircle, user,
   ];
 }
 

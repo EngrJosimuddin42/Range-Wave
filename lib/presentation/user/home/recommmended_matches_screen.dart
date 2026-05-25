@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:range_wave/controller/recommended_mechanic_controller.dart';
 import 'package:range_wave/core/navigation/app_routes.dart';
+import 'package:range_wave/model/recommended_mechanic_model.dart';
 import '../../../core/utils/color/app_colors.dart';
 import '../../../core/utils/common_widget/app_top_section.dart';
 import '../../../gen/assets.gen.dart';
@@ -10,48 +12,8 @@ import '../../../gen/assets.gen.dart';
 class RecommendedMatchesScreen extends StatelessWidget {
   RecommendedMatchesScreen({super.key});
 
-  final List<RecommendedMatchModel> matchList = [
-    RecommendedMatchModel(
-      name: 'Alica Jacobe',
-      imageUrl:
-          'https://images.pexels.com/photos/6170742/pexels-photo-6170742.jpeg',
-      time: '5 min',
-      originalPrice: 560,
-      offerPrice: 550,
-      rating: 4.5,
-      bgColor: AppColors.blue.withValues(alpha: 0.1),
-    ),
-    RecommendedMatchModel(
-      name: 'John Carter',
-      imageUrl:
-          'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
-      time: '8 min',
-      originalPrice: 600,
-      offerPrice: 575,
-      rating: 4.7,
-      bgColor: AppColors.surface,
-    ),
-    RecommendedMatchModel(
-      name: 'Emma Watson',
-      imageUrl:
-          'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
-      time: '3 min',
-      originalPrice: 500,
-      offerPrice: 480,
-      rating: 4.8,
-      bgColor: AppColors.surface,
-    ),
-    RecommendedMatchModel(
-      name: 'Michael Brown',
-      imageUrl:
-          'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg',
-      time: '12 min',
-      originalPrice: 650,
-      offerPrice: 620,
-      rating: 4.3,
-      bgColor: AppColors.surface,
-    ),
-  ];
+  final RecommendedMechanicController controller =
+  Get.put(RecommendedMechanicController());
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +25,7 @@ class RecommendedMatchesScreen extends StatelessWidget {
           children: [
             AppTopLogo(),
 
+            // ── Top bar ──────────────────────────────────────
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
               child: Row(
@@ -85,41 +48,105 @@ class RecommendedMatchesScreen extends StatelessWidget {
               ),
             ),
 
+            // ── List ─────────────────────────────────────────
             Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                itemCount: matchList.length,
-                itemBuilder: (context, index) {
-                  final match = matchList[index];
-                  return _matchTile(match, () {
-                    Get.toNamed(AppRoutes.mechanicPortfolio);
-                  });
-                },
-              ),
+              child: Obx(() {
+
+                // Loading
+                if (controller.isLoading.value) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.primary,
+                    ),
+                  );
+                }
+
+                // Empty
+                if (controller.mechanicList.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'No mechanics found.',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: AppColors.textTernary,
+                      ),
+                    ),
+                  );
+                }
+
+                // List
+                return ListView.builder(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  itemCount: controller.mechanicList.length,
+                  itemBuilder: (context, index) {
+                    final match = controller.mechanicList[index];
+                    return _MatchTile(
+                      match        : match,
+                      isHighlighted: index == 0,
+                      onTap        : () => Get.toNamed(
+                        AppRoutes.mechanicPortfolio,
+                        arguments: match,
+                      ),
+                    );
+                  },
+                );
+              }),
             ),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _matchTile(RecommendedMatchModel match, VoidCallback onTap) {
+// ════════════════════════════════════════════════════════════
+//  Match tile
+// ════════════════════════════════════════════════════════════
+class _MatchTile extends StatelessWidget {
+  final RecommendedMechanicModel match;
+  final bool         isHighlighted;
+  final VoidCallback onTap;
+
+  const _MatchTile({
+    required this.match,
+    required this.isHighlighted,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 8.h),
         decoration: BoxDecoration(
-          color: match.bgColor,
+          color: isHighlighted
+              ? AppColors.blue.withValues(alpha: 0.1)
+              : AppColors.surface,
           borderRadius: BorderRadius.circular(12.r),
         ),
         child: ListTile(
           contentPadding: EdgeInsets.symmetric(horizontal: 12.w),
+
+          // ── Avatar ────────────────────────────────────────
           leading: CircleAvatar(
             radius: 28.r,
-            backgroundImage: NetworkImage(match.imageUrl),
+            backgroundColor: AppColors.surface,
+            backgroundImage: match.avatarUrl.isNotEmpty
+                ? NetworkImage(match.avatarUrl)
+                : null,
+            child: match.avatarUrl.isEmpty
+                ? Icon(
+              Icons.person,
+              size: 28.w,
+              color: AppColors.textTernary,
+            )
+                : null,
           ),
+
+          // ── Name ──────────────────────────────────────────
           title: Text(
-            match.name,
+            match.fullName,
             style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 16.sp,
@@ -127,10 +154,12 @@ class RecommendedMatchesScreen extends StatelessWidget {
               fontFamily: GoogleFonts.manrope().fontFamily,
             ),
           ),
+
+          // ── Distance & shop name ───────────────────────────
           subtitle: Row(
             children: [
               Text(
-                match.time,
+                '${match.distanceKm.toStringAsFixed(1)} km',
                 style: TextStyle(
                   fontSize: 14.sp,
                   color: AppColors.textPrimary,
@@ -147,16 +176,22 @@ class RecommendedMatchesScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 8.w),
-              Text(
-                '\$${match.originalPrice}',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w400,
+              Expanded(
+                child: Text(
+                  match.shopName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    color: AppColors.textTernary,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
             ],
           ),
+
+          // ── Initial charge & rating ────────────────────────
           trailing: FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerRight,
@@ -165,7 +200,7 @@ class RecommendedMatchesScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  '\$${match.offerPrice}',
+                  '\$${match.initialCharge}',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 16.sp,
@@ -183,7 +218,7 @@ class RecommendedMatchesScreen extends StatelessWidget {
                     ),
                     SizedBox(width: 4.w),
                     Text(
-                      match.rating.toString(),
+                      match.avgRating.toStringAsFixed(1),
                       style: TextStyle(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w500,
@@ -199,24 +234,4 @@ class RecommendedMatchesScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-class RecommendedMatchModel {
-  final String name;
-  final String imageUrl;
-  final String time;
-  final double originalPrice;
-  final double offerPrice;
-  final double rating;
-  final Color bgColor;
-
-  RecommendedMatchModel({
-    required this.name,
-    required this.imageUrl,
-    required this.time,
-    required this.originalPrice,
-    required this.offerPrice,
-    required this.rating,
-    required this.bgColor,
-  });
 }

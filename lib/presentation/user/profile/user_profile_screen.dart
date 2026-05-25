@@ -171,11 +171,7 @@ class _ProfileScreenState extends State<UserProfileScreen> {
                           await Get.toNamed(AppRoutes.userEditProfile);
                           controller.loadProfile(forceReload: true);
                         },
-                        icon: Icon(
-                          Icons.edit_outlined,
-                          size: 24.w,
-                          color: AppColors.textPrimary,
-                        ),
+                        icon: Assets.icons.edit.svg( width: 24.w, height: 24.w),
                       ),
                     ],
                   ),

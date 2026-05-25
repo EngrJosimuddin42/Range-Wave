@@ -39,7 +39,7 @@ class CarListModel {
     imageUrl: AppCredentials.resolveUrl(
       (json["image_url"] ?? json["car_image"] ?? json["image"] ?? '').toString(),
     ),
-    id: json["id"] ?? "",
+    id       : json['id']        ?? json['_id'] ?? '',
     updatedAt: DateTime.tryParse(json["updated_at"] ?? "") ?? DateTime.now(),
   );
 
