@@ -136,7 +136,7 @@ class ScheduledServiceController extends GetxController {
           );
         }
 
-        showCustomToast(text: 'Location updated successfully!');
+        showCustomToast(text: 'Location updated successfully!',toastType: ToastTypesInfo(ToastTypes.success));
       } else {
         locationController.text = 'Location Selected';
       }

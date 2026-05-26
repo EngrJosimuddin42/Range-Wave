@@ -1,18 +1,19 @@
+// lib/presentation/payment/make_payment_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../controller/payment_controller.dart';
-import '../../../core/navigation/app_routes.dart';
 import '../../../core/utils/color/app_colors.dart';
 import '../../../core/utils/common_widget/primary_button.dart';
 import '../../../gen/assets.gen.dart';
+import '../../../model/booking_detail_model.dart';
 
 class MakePaymentScreen extends StatelessWidget {
   MakePaymentScreen({super.key});
 
-  //  PaymentController find করছে
-  final PaymentController paymentController = Get.find<PaymentController>();
+  final PaymentController paymentController = Get.put(PaymentController());
 
   final TextStyle labelStyle = TextStyle(
     fontSize: 14.sp,
@@ -23,6 +24,10 @@ class MakePaymentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    // ✅ ServiceInProgressScreen থেকে পাঠানো booking data
+    final BookingDetailModel booking = Get.arguments as BookingDetailModel;
+
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
@@ -48,7 +53,7 @@ class MakePaymentScreen extends StatelessWidget {
           children: [
             SizedBox(height: 16.h),
 
-            // ── Billing Summary ──
+            // ── Billing Summary ──────────────────────────
             Text(
               'Billing Summary',
               style: TextStyle(
@@ -70,9 +75,10 @@ class MakePaymentScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ── Mechanic Name ──
+
+                  // ✅ Dynamic — car brand + model
                   Text(
-                    'Alex Car Mechanic',
+                    '${booking.carIssue.brand} ${booking.carIssue.model}',
                     style: TextStyle(
                       fontSize: 20.sp,
                       fontWeight: FontWeight.w700,
@@ -82,14 +88,14 @@ class MakePaymentScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 8.h),
 
-                  // ── Date & Time ──
+                  // ✅ Dynamic — service date & time
                   Row(
                     children: [
                       Icon(Icons.calendar_today_outlined,
                           size: 14.w, color: AppColors.textSecondary),
                       SizedBox(width: 4.w),
                       Text(
-                        'Dec 16, 2024',
+                        booking.carIssue.serviceDate,
                         style: labelStyle.copyWith(
                             color: AppColors.textSecondary),
                       ),
@@ -98,7 +104,7 @@ class MakePaymentScreen extends StatelessWidget {
                           size: 14.w, color: AppColors.textSecondary),
                       SizedBox(width: 4.w),
                       Text(
-                        '10:00 AM',
+                        booking.carIssue.serviceTime,
                         style: labelStyle.copyWith(
                             color: AppColors.textSecondary),
                       ),
@@ -110,25 +116,29 @@ class MakePaymentScreen extends StatelessWidget {
                       color: AppColors.textPrimary.withValues(alpha: 0.1)),
                   SizedBox(height: 12.h),
 
-                  // ── Bill Items ──
-                  _billItem('Oil Changes', '\$123'),
-                  SizedBox(height: 10.h),
-                  _billItem('Break Pad', '\$123'),
-                  SizedBox(height: 10.h),
-                  _billItem('Extra Service Charge', '\$123'),
+                  // ✅ Dynamic — cost_details rows
+                  ...booking.costDetails.entries.map(
+                        (entry) => Padding(
+                      padding: EdgeInsets.only(bottom: 10.h),
+                      child: _billItem(
+                        entry.key,
+                        '\$${entry.value}',
+                      ),
+                    ),
+                  ),
 
-                  SizedBox(height: 12.h),
+                  SizedBox(height: 4.h),
                   Divider(
                       color: AppColors.textPrimary.withValues(alpha: 0.1)),
                   SizedBox(height: 12.h),
 
-                  // ── Total ──
+                  // ✅ Dynamic — total
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Total', style: labelStyle),
                       Text(
-                        '\$2200',
+                        '\$${booking.totalCost.toStringAsFixed(1)}',
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
@@ -144,7 +154,7 @@ class MakePaymentScreen extends StatelessWidget {
 
             SizedBox(height: 24.h),
 
-            // ── Payment Method ──
+            // ── Payment Method ────────────────────────────
             Text(
               'Payment Method',
               style: TextStyle(
@@ -156,12 +166,13 @@ class MakePaymentScreen extends StatelessWidget {
             ),
             SizedBox(height: 12.h),
 
-            // ✅ Dynamic card list
             Obx(() => Column(
-              children: paymentController.paymentCards.asMap().entries.map((entry) {
+              children: paymentController.paymentCards
+                  .asMap()
+                  .entries
+                  .map((entry) {
                 final index = entry.key;
-                final card = entry.value;
-
+                final card  = entry.value;
                 return Padding(
                   padding: EdgeInsets.only(bottom: 12.h),
                   child: GestureDetector(
@@ -175,7 +186,6 @@ class MakePaymentScreen extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          // ✅ Stripe/Apple Pay image, নতুন card এ icon
                           index == 0
                               ? Assets.images.stripe.image(width: 24.w)
                               : index == 1
@@ -186,9 +196,7 @@ class MakePaymentScreen extends StatelessWidget {
                           SizedBox(width: 12.w),
                           Expanded(
                             child: Text(
-                              card.cardNumber.isNotEmpty
-                                  ? '**** **** **** ${card.cardNumber.length >= 4 ? card.cardNumber.substring(card.cardNumber.length - 4) : card.cardNumber}'
-                                  : card.name,
+                              card.name,
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w500,
@@ -197,12 +205,10 @@ class MakePaymentScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-
-                          // ✅ Radio button
                           Obx(() => Radio(
-                            value: index,
+                            value     : index,
                             groupValue: paymentController.selectedIndex.value,
-                            onChanged: (val) =>
+                            onChanged : (val) =>
                                 paymentController.selectCard(val!),
                             activeColor: AppColors.primary,
                           )),
@@ -216,9 +222,9 @@ class MakePaymentScreen extends StatelessWidget {
 
             SizedBox(height: 8.h),
 
-            // ── Security Note ──
             Text(
-              'Your payment information is secure and encrypted.\nBy confirming, you agree to our Terms of Service.',
+              'Your payment information is secure and encrypted.\n'
+                  'By confirming, you agree to our Terms of Service.',
               style: TextStyle(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w400,
@@ -229,15 +235,15 @@ class MakePaymentScreen extends StatelessWidget {
 
             const Spacer(),
 
-            // ── Bottom Buttons ──
+            // ── Bottom Buttons ────────────────────────────
             Padding(
               padding: EdgeInsets.only(bottom: 30.h),
               child: Row(
                 children: [
-                  // Total button
+                  // ✅ Dynamic total
                   Expanded(
                     child: PrimaryButton(
-                      text: 'Total: \$2200',
+                      text: 'Total: \$${booking.totalCost.toStringAsFixed(1)}',
                       borderColor:
                       AppColors.textPrimary.withValues(alpha: 0.3),
                       textStyle: TextStyle(
@@ -250,15 +256,15 @@ class MakePaymentScreen extends StatelessWidget {
                   ),
                   SizedBox(width: 16.w),
 
-                  // Pay Now button
+                  // ✅ Pay Now → Stripe
                   Expanded(
-                    child: PrimaryButton(
-                      text: 'Pay Now',
-                      backgroundColor: AppColors.primary,
-                      onTap: () {
-                        Get.toNamed(AppRoutes.paymentSuccessful);
-                      },
-                    ),
+                    child: Obx(() => PrimaryButton(
+                      loading         : paymentController.isLoading.value,
+                      text            : 'Pay Now',
+                      backgroundColor : AppColors.primary,
+                      onTap           : () => paymentController
+                          .processPayment(booking: booking),
+                    )),
                   ),
                 ],
               ),
@@ -269,7 +275,6 @@ class MakePaymentScreen extends StatelessWidget {
     );
   }
 
-  // ── Bill Item Row ──
   Widget _billItem(String title, String price) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

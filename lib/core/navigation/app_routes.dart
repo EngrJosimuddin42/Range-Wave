@@ -44,6 +44,7 @@ class AppRoutes {
   static const String mechanicHome = '/mechanic-home-screen';
   static const String mechanicPaymentHistory = '/mechanic-payment-history-screen';
   static const String mapScreen = '/map-screen';
+  static const String liveMechanicTrack = '/live-mechanic-track';
   static const String notification = '/notification-screen';
 
   /// ---------------------------------------- chat ------------------------------------------------------- ///

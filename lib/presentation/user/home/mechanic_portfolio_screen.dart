@@ -228,12 +228,13 @@ class MechanicPortfolioScreen extends StatelessWidget {
                     PrimaryButton(
                       text: 'Book Now',
                       backgroundColor: AppColors.primary,
-                      onTap: () {
-                        Get.toNamed(
-                          AppRoutes.mapScreen,
-                          arguments: m,
-                        );
-                      },
+                      onTap: () => Get.toNamed(
+                        AppRoutes.mapScreen,
+                        arguments: {
+                          'mechanic' : m,
+                          'issue_id' : controller.carIssueId,
+                        },
+                      ),
                     ),
 
                     SizedBox(height: 40.h),

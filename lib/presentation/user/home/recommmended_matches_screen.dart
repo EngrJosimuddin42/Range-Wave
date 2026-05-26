@@ -8,6 +8,7 @@ import 'package:range_wave/model/recommended_mechanic_model.dart';
 import '../../../core/utils/color/app_colors.dart';
 import '../../../core/utils/common_widget/app_top_section.dart';
 import '../../../gen/assets.gen.dart';
+import '../../../model/car_issue_model.dart';
 
 class RecommendedMatchesScreen extends StatelessWidget {
   RecommendedMatchesScreen({super.key});
@@ -35,8 +36,7 @@ class RecommendedMatchesScreen extends StatelessWidget {
                     icon: const Icon(Icons.arrow_back),
                   ),
                   SizedBox(width: 8.w),
-                  Text(
-                    'Recommended Matches',
+                  Text( 'Recommended Matches',
                     style: TextStyle(
                       fontSize: 20.sp,
                       fontWeight: FontWeight.w500,
@@ -83,9 +83,12 @@ class RecommendedMatchesScreen extends StatelessWidget {
                     return _MatchTile(
                       match        : match,
                       isHighlighted: index == 0,
-                      onTap        : () => Get.toNamed(
+                      onTap: () => Get.toNamed(
                         AppRoutes.mechanicPortfolio,
-                        arguments: match,
+                        arguments: {
+                          'mechanic' : match,
+                          'issue_id' : (Get.arguments as CarIssueModel).id,
+                        },
                       ),
                     );
                   },
@@ -156,39 +159,15 @@ class _MatchTile extends StatelessWidget {
           ),
 
           // ── Distance & shop name ───────────────────────────
-          subtitle: Row(
-            children: [
-              Text(
-                '${match.distanceKm.toStringAsFixed(1)} km',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              SizedBox(width: 8.w),
-              Container(
-                width: 4.w,
-                height: 4.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: Text(
-                  match.shopName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 13.sp,
-                    color: AppColors.textTernary,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
-            ],
+          subtitle: Text(
+            '${match.distanceKm.toStringAsFixed(1)} km • ${match.shopName}',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 13.sp,
+              color: AppColors.textTernary,
+              fontWeight: FontWeight.w400,
+            ),
           ),
 
           // ── Initial charge & rating ────────────────────────

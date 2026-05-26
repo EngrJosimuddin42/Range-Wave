@@ -8,10 +8,15 @@ class MechanicPortfolioService {
     required String mechanicId,
   }) async {
     try {
+      print('CALLING: common/get-mechanic-data/$mechanicId');
       final response = await CustomHttp.get(
         endpoint: 'common/get-mechanic-data/$mechanicId',
         needAuth: true,
       );
+
+
+      print('STATUS: ${response.statusCode}');
+      print('DATA: ${response.data}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final model = MechanicPortfolioModel.fromJson(response.data);

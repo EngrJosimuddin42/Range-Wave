@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:range_wave/core/navigation/app_pages.dart';
 import 'package:range_wave/core/navigation/app_routes.dart';
 import 'package:range_wave/core/utils/app_helper.dart';
+
+import 'core/app_credentials.dart';
 
 final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
 GlobalKey<ScaffoldMessengerState>();
@@ -12,6 +15,10 @@ GlobalKey<ScaffoldMessengerState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+
+  //  Stripe init
+  Stripe.publishableKey = AppCredentials.stripePublishableKey;
+  await Stripe.instance.applySettings();
 
   // Check login status and role
   final accessToken = await AppHelper.instance.getAccessToken();

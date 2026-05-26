@@ -4,7 +4,8 @@ class AppCredentials {
   static String get domain => dotenv.env['BASE_URL'] ?? 'https://87dzb7n8-8000.asse.devtunnels.ms/api';
   static const String wsDomain = 'ws://10.10.12.10:3000';
 
-
+  static String get stripePublishableKey =>
+      dotenv.env['STRIPE_PUBLISHABLE_KEY'] ?? '';
 
   static String resolveUrl(String path) {
     if (path.isEmpty) return '';

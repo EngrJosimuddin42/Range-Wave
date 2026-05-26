@@ -34,6 +34,8 @@ import '../../presentation/auth/signup/add_car_screen.dart';
 import '../../presentation/auth/signup/enable_location_screen.dart';
 import '../../presentation/auth/signup/signup_screen.dart';
 import '../../presentation/auth/signup/verify_email_screen.dart';
+import '../../presentation/mechanic/history/mechanic_history_screen.dart';
+import '../../presentation/mechanic/home/live_mechanic_track_screen.dart';
 import '../../presentation/mechanic/home/mechanic_home_screen.dart';
 import '../../presentation/mechanic/profile/mechanic_change_password_screen.dart';
 import '../../presentation/mechanic/profile/mechanic_credit_card_screen.dart';
@@ -80,12 +82,14 @@ class AppPages {
     GetPage(name: AppRoutes.mechanicPayment, page: () => MechanicPaymentScreen()),
     GetPage(name: AppRoutes.mechanicCreditCard, page: () => MechanicCreditCardScreen()),
     GetPage(name: AppRoutes.mechanicChangePassword, page: () => MechanicChangePasswordScreen()),
+    GetPage(name: AppRoutes.mechanicHistory, page: () =>  MechanicHistoryScreen()),
     GetPage(name: AppRoutes.mechanicHistoryDetails, page: () => MechanicHistoryDetails()),
     GetPage(name: AppRoutes.setTime, page: () => SetTimeScreen()),
     GetPage(name: AppRoutes.mechanicHome, page: () => MechanicHomeScreen()),
     GetPage(name: AppRoutes.mechanicPaymentHistory, page: () => PaymentHistory()),
     GetPage(name: AppRoutes.mapScreen, page: () => MapScreen()),
     GetPage(name: AppRoutes.notification, page: () => NotificationScreen()),
+    GetPage(name: AppRoutes.liveMechanicTrack, page: () => LiveMechanicTrackScreen()),
 
     /// ------------------------------ chat ---------------------------------------- ///
     GetPage(name: AppRoutes.chatListScreen, page: () => ChatListScreen()),

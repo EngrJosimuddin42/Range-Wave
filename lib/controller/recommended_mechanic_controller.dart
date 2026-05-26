@@ -13,8 +13,10 @@ class RecommendedMechanicController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    print('Arguments: ${Get.arguments}');
     if (Get.arguments != null && Get.arguments is CarIssueModel) {
       final CarIssueModel issue = Get.arguments as CarIssueModel;
+      print('Issue ID: ${issue.id}');
       fetchMechanics(issue.id);
     }
   }

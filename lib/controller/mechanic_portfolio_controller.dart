@@ -9,16 +9,22 @@ class MechanicPortfolioController extends GetxController {
 
   final Rxn<MechanicPortfolioModel> mechanic = Rxn<MechanicPortfolioModel>();
   final RxBool isLoading = RxBool(false);
+  String carIssueId = '';
 
   @override
   void onInit() {
     super.onInit();
-    if (Get.arguments != null && Get.arguments is RecommendedMechanicModel) {
-      final RecommendedMechanicModel data =
-      Get.arguments as RecommendedMechanicModel;
-      fetchMechanicDetails(data.mechanicId);
+    if (Get.arguments != null && Get.arguments is Map) {
+      final args = Get.arguments as Map;
+      final RecommendedMechanicModel mechanic =
+      args['mechanic'] as RecommendedMechanicModel;
+      carIssueId = args['issue_id'] ?? '';
+      print('MECHANIC ID: ${mechanic.mechanicId}');
+      print('ISSUE ID: $carIssueId');
+      fetchMechanicDetails(mechanic.mechanicId);
     }
   }
+
 
   Future<void> fetchMechanicDetails(String mechanicId) async {
     isLoading.value = true;

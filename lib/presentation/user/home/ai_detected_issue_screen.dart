@@ -39,7 +39,7 @@ class AiDetectedIssueScreen extends StatelessWidget {
                         icon: const Icon(Icons.arrow_back),
                       ),
                       SizedBox(width: 8.w),
-                      Text('Scheduled a Service',
+                      Text('AI Detected Issues',
                         style: TextStyle(
                           fontSize: 20.sp,
                           fontWeight: FontWeight.w500,
@@ -164,10 +164,9 @@ class AiDetectedIssueScreen extends StatelessWidget {
 
                         //  Dynamic summary text
                         Text(
-                          data.summary.isEmpty ||
-                              data.summary == 'response.output_text'
+                          data.summary.isEmpty || data.summary == 'response.output_text'
                               ? 'No summary available.'
-                              : data.summary,
+                              : 'Quick Suggestion: ${data.summary}',
                           style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w400,

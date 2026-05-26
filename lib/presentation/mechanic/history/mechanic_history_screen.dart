@@ -8,27 +8,26 @@ import '../../user/home/widget/service_history_card.dart';
 import '../../../controller/mechanic_history_controller.dart';
 
 class MechanicHistoryScreen extends StatelessWidget {
-  MechanicHistoryScreen({super.key});
-
-  final MechanicHistoryController controller = Get.put(
-    MechanicHistoryController(),
-    tag: 'mechanic_history_screen',
-  );
+  const MechanicHistoryScreen({super.key}); // const করা হলো
 
   @override
   Widget build(BuildContext context) {
+
+    final MechanicHistoryController controller = Get.find<MechanicHistoryController>();
+
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
         backgroundColor: AppColors.surface,
+        elevation: 0,
         title: Text(
           'History',
           style: TextStyle(
             fontSize: 20.sp,
             fontFamily: GoogleFonts.manrope().fontFamily,
             fontWeight: FontWeight.w500,
-            color: AppColors.textSecondary,
+            color: AppColors.textPrimary,
           ),
         ),
       ),
@@ -51,13 +50,15 @@ class MechanicHistoryScreen extends StatelessWidget {
                     children: controller.chips.asMap().entries.map((entry) {
                       final index = entry.key;
                       final item = entry.value;
-                      final isSelected =
-                          controller.selectedChipIndex.value == index;
+                      final isSelected = controller.selectedChipIndex.value == index;
 
                       return Padding(
                         padding: EdgeInsets.only(right: 12.w),
                         child: GestureDetector(
-                          onTap: () => controller.selectedChipIndex(index),
+                          onTap: () {
+                            debugPrint("🖱️ Clicked on Chip: $item (Index: $index)");
+                            controller.selectedChipIndex(index);
+                          },
                           child: Container(
                             margin: EdgeInsets.symmetric(vertical: 4.h),
                             padding: EdgeInsets.symmetric(
@@ -73,8 +74,7 @@ class MechanicHistoryScreen extends StatelessWidget {
                                 BoxShadow(
                                   blurRadius: 4,
                                   offset: const Offset(0, 2),
-                                  color: AppColors.textPrimary
-                                      .withValues(alpha: 0.15),
+                                  color: AppColors.textPrimary.withValues(alpha: 0.15),
                                 ),
                               ],
                             ),
@@ -83,15 +83,10 @@ class MechanicHistoryScreen extends StatelessWidget {
                               style: TextStyle(
                                 color: isSelected
                                     ? AppColors.primary
-                                    : Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.color,
+                                    : AppColors.textPrimary,
                                 fontSize: 16.sp,
                                 fontFamily: GoogleFonts.manrope().fontFamily,
-                                fontWeight: isSelected
-                                    ? FontWeight.w700
-                                    : FontWeight.w400,
+                                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
                               ),
                             ),
                           ),
@@ -108,12 +103,12 @@ class MechanicHistoryScreen extends StatelessWidget {
             // ── History List ──
             Expanded(
               child: Obx(() {
-                //  Loading State
+                // Loading State
                 if (controller.isLoading.value) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                //  Empty State
+                // Empty State
                 if (controller.mechanicHistoryList.isEmpty) {
                   return Center(
                     child: Column(
@@ -139,7 +134,7 @@ class MechanicHistoryScreen extends StatelessWidget {
                   );
                 }
 
-                //  Data List — MechanicHistoryController
+                // Data List
                 return RefreshIndicator(
                   onRefresh: controller.fetchMechanicHistory,
                   child: ListView.builder(

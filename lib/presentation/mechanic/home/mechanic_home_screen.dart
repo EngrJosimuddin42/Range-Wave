@@ -111,8 +111,7 @@ class _MechanicHomeScreenState extends State<MechanicHomeScreen> {
                   title: 'Jobs List',
                   isShowAll: true,
                   onTap: () {
-
-                    // Get.toNamed(AppRoutes.mechanicAllJobs);
+                     Get.toNamed(AppRoutes.mechanicHistory);
                   }
               ),
 
@@ -407,11 +406,18 @@ class IncomingJobCard extends StatelessWidget {
                       ),
                     ),
                     SizedBox(width: 12.w),
+                    // MechanicHomeScreen এ IncomingJobCard এ
                     Expanded(
                       child: PrimaryButton(
                         text: 'Accept',
                         backgroundColor: AppColors.primary,
                         height: 33.h,
+                        onTap: () {
+                          Get.toNamed(
+                            AppRoutes.liveMechanicTrack,
+                            arguments: serviceRequest,
+                          );
+                        },
                       ),
                     ),
                   ],
